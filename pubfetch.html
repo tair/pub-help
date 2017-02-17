@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link rel=Edit-Time-Data href="./PubFetch_files/editdata.mso">
+<title>PubFetch</title>
+<style><!--
+.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF" link=blue vlink=purple class="Normal" lang=EN-US>
+<div class=Section1> 
+<TABLE width=550><TR><TD>
+  <h2>PubFetch</h2>
+  <p><b><span style='font-family:Verdana'>Description</span></b><span
+style='font-family:Verdana'><br>
+    PubFetch is part of the PubSearch
+web-based literature curation toolset and functions as the interface between 
+    the literature curation tools and the online literature databases, such as 
+    PubMed. The aim of PubFetch is to provide a generic way of searching and retrieving 
+    literature data from online literature datasources so that the downstream 
+    applications dont have to deal with the idiosyncracies of the individual literature 
+    databases. Initially PubFetch will act as the interface between PubSearch 
+    and the <a
+href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed" target="_blank">PubMed</a> and 
+    <a
+href="http://www.nal.usda.gov/ag98/"  target="_blank">Agricola</a> databases used by <a
+href="http://rgd.mcw.edu/"  target="_blank">RGD</a> and <a href="http://www.arabidopsis.org/"  target="_blank">TAIR</a>. 
+    A standard API and data format will be created to provide database queries 
+    and return results, popular existing formats and protocols will be used/supported 
+    wherever possible. </span></p>
+  <div align=center> 
+    <table border=0 cellpadding=0 width="100%">
+      <tr> 
+        <td class="Normal"> <p><span style='font-family:Verdana'> <img border=0 width=496 height=370
+  src="newimages/fetch1.jpg" alt="overview of pubfetch"> 
+            </span></p></td>
+      </tr>
+      <tr> 
+        <td class="Normal"> <p><strong><span style='font-family:Verdana'>Figure 
+            1 - Overview diagram of PubFetch showing how the PubFetch module will 
+            provide a generic literature access interface to PubMed and Agricola 
+            which could be expanded to other literature sources as desired.</span></strong></p></td>
+      </tr>
+    </table>
+  </div>
+  <p><b><span style='font-family:Verdana'>Plan of Action</span></b><span
+style='font-family:Verdana'> </span></p>
+  <p><span style='font-family:Verdana'>The codebase will be developed initially 
+    in perl by adapting <a
+href="http://www.gmod.org/pubfetch/rgd_scripts/index.shtml"  target="_blank">exising RGD perl modules</a> 
+    designed to retrieve data from PubMed in a standard XML format. This code 
+    will be reviewed and adapted to create the main PubFetch module and appropriate 
+    database interace modules. Figure 2 is a schematic diagram 
+    of the exising RGD literature download modules. </span></p>
+  <p> <img border=0 width=400 height=197
+src="newimages/fetch2.jpg"> </p>
+  <p><strong><span style='font-family:Verdana'>Figure 2- Current RGD literature download process showing perl modules 
+    used to interact with PubMed, create XML data and load into RGD</strong></span></p>
+  <p><span style='font-family:Verdana'>The fundamental actions required of PubFetch 
+    are as follows: </span></p>
+  <p> <span
+style='font-size:10.0pt;font-family:"Courier New";
+"Times New Roman"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    </span></span> <span style='font-family:Verdana'>Search LitDb for articles 
+    matching certain query criteria (eg. keywords, date, author, etc). This will 
+    most likely entail passing the search critieria to PubFetch and retrieving 
+    a set of accession numbers (eg. PubMed IDs, PMIDs) for matching references. 
+    </span></p>
+  <p> <span
+style='font-size:10.0pt;font-family:"Courier New";
+"Times New Roman"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    </span></span> <span style='font-family:Verdana'>Retrieve the text information 
+    from the LitDb corresponding to a supplied accession number (eg. bring me 
+    the PubMed entry for PMID 12345) </span></p>
+  <p><span style='font-family:Verdana'>This is the procedure folliwed by the existing 
+    RGD modules. Search criteria are passed to Getrefs via the web interface, 
+    this returns a list of matching PMIDs from PubMed, these are then checked 
+    for duplicates, redundancy, etc. A second method is called in GetRefs.pm that 
+    is passed the PMIDs required and retrieves the text record for the desired 
+    references. This data is converted to a RGD XML format and passed to LoadRefs.pm 
+    which parses the reference data and loads it into the appropriate db tables. 
+    </span></p>
+  <p><strong><span style='font-family:Verdana'>PubFetch as a BioMOBY webservice</span></strong><span style='font-family:Verdana'> 
+    </span></p>
+  <p><span style='font-family:Verdana'>To provide generic access to PubFetch we 
+    intend to make the core functionality available as a webservice, following 
+    the <a href="http://www.biomoby.org"  target="_blank">BioMOBY</a> service model. The two actions 
+    described above will be implemented as two classes of webservices, the first 
+    taking keywords and returning PubMed IDs (or other LitDb accession) , the 
+    second taking LitDb accessions and returning the text information in a simple, 
+    standardized XML format. We will endeavour to provide the data in existing 
+    formats (raw data from the LitDb, a BioPerl-compatible format, etc) in addition 
+    to a simple XML format that is not dependent on other codebases </span></p>
+  <p><b><span style='font-family:Verdana'>Downloads</span></b><span
+style='font-family:Verdana'> </span></p>
+  <p><span style='font-family:Verdana'>These will ultimately be from <a
+href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gmod/pubfetch/"  target="_blank">SourceForge</a>. 
+    Perl code, use case diagrams, etc. will be available shortly. </span></p>
+</TD></TR></TABLE>
+</div>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<html><head><title>GO Curation Guide</title></head>
+<BR>
+<body bgcolor="#FfFfFF">
+<CENTER><H2> TAIR Controlled Vocabulary Annotation/Curation Guide </H2></CENTER>
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+<TD><CENTER>
+
+<A HREF="#types">Basic Terminology</A>|
+<A HREF="#common">Common Mistakes</A>|
+<A HREF ="#guidelines">General Annotation Guidelines</A>|
+<A HREF ="#codes">Evidence Code Usage</A>|<BR>
+<A HREF= "#Strategies">Gene Selection Strategies Past, Present and Future</A>|<BR>
+<A HREF= "#expression">Annotation of Gene Expression</A>
+
+</CENTER></TD><BR><BR>    
+<UL> This guide should help you in associating Arabidopsis genes to GO (function, process, component) and PO (plant structure, growth and developmental stages) terms using information from the literature. I am trying to keep this help page up-to-date by incorporating the comments from our Annotation meetings. Please email your comments/questions to <a href="mailto:tberardi@acoma.stanford.edu">tberardi@acoma </a>. 
+
+<BR>
+<BR>
+<B>Further reading:</B> <BR>
+<UL>
+<LI> <A href="pub_help.html">TAIR's General Annotation Guide</A>
+<LI> <A href="AGP_help.html">Allele, Phenotype, Germplasm Annotation Guide</A>
+<LI> <A href="PubGO_help.html">How to do Controlled Vocabulary Annotation in PubSearch</A>
+</UL>
+<BR><BR
+
+<BR>
+<BR>
+
+<CENTER><A NAME="types"><B>Basic Terminology</B></a></CENTER><BR>
+
+<UL>
+<LI><U>Temporary term </U>: a GO term that does not yet exist in the database, suggested by the curator.  These terms can be entered using the Pub
+Add Term interface.<BR>
+
+<LI><U> Temporary annotation </U>: an annotation of a gene model to a temporary term. If you annotate to a temporary term using the Pub interface, the annotation will automatically be flagged as temporary and will need to be revisited.  
+
+<LI><U>Non-GO annotation</U>:  an annotation to the anatomy, temporal ontologies or of genetic interactions/gene family associations of the gene being updated. Comments relating to genetic interactions and gene family membership can be placed in the comment field until we have a way to store this info in the database.
+
+
+<LI><U>GO annotation</U>: an annotation of a gene to GO terms already in the existing ontology. 
+</UL>
+
+<BR>
+
+
+<BR>
+<CENTER><A NAME="common"><B>How To Avoid Common Mistakes</B></a></CENTER> <BR>
+
+<OL>
+<LI> Use <B>only</B> the evidence type NAS when annotating using a meeting abstract.  Check the article_type if you are unsure.
+<LI> Use <B>only</B> the relationship types 'has' or 'does not have' when annotating to a function term that ends in the word 'activity.'
+<LI> Use <B>only</B> the relationship type 'functions in' when annotating to a function term that ends in the word 'binding.'
+<LI> Use <B>only</B> the following evidence types when annotating expression patterns in anatomical parts or developmental stages:  IDA, IEP, NAS, TAS.
+<LI> Use <B>only</B> the relationship types containing the word 'expressed' or 'located' when annotating expression patterns in anatomical parts or developmental stages.
+<LI> The evidence description 'inferred from mutant phenotype' has been phased out.
+<LI> Do <B> NOT </B> enter anything in the evidence_with field when using the evidence codes NAS, TAS, or ND.  If there's a comment you'd like to add, put this in the summary or in the comment field for the annotation or better yet, both.
+</OL>
+<p>
+
+<BR>
+<CENTER><A NAME="GO"><B>General Notes on CV Annotations at TAIR</B></a><BR></CENTER>
+<BR>
+The CV annotations are dumped on a weekly basis into the FTP site at TAIR and are loaded into the TAIR database twice a month. In addition, the GO annotations are sent to the GO central database on a daily basis.  The vocabularies themselves are updated on a daily basis. Use the <a href="http://www.godatabase.org/cgi-bin/go.cgi">GO-AMIGO browser </a> to see the gene associations to any GO term.  The GO database/gene association information is updated weekly at the beginning of the week. If you have questions about
+annotation-related issues- bring them up with the group during our regular
+curator meeting and we can discuss it
+(e.g.appropriateness of terms, evidence codes, strength of
+evidence).  <BR></BR>
+
+<CENTER><A NAME = "guidelines"><B>General Annotation Guidelines</B></A></CENTER>
+<BR><BR>
+<B>Note:</B>  Most of these refer to GO-specific documents. However, the principles are applicable to anatomy and developmental stage annotations as well.<br>
+<UL>
+<LI> Check out the <a href= "http://www.geneontology.org/doc/GO.annotation.html"> GO consortium annotation guidelines</a> for a general overview.
+
+<LI> Before starting GO annotation on your gene model, look on the locus detail page to
+see if other GO annotations to gene models at this locus already exist.  If there are only IEA
+annotations for any of the aspects, you should add non-IEA ones if you can.
+
+<!--<LI> If the gene that has been assigned to you has no valid references associated to it, but is a valid gene name, drop the task with a comment explaining why.-->
+
+<LI> If the gene that has been assigned to you only has a Genbank record that refers to it as a 'such-and-such' homolog and has no literature associations, do not annotate this at the moment.  We are waiting for the database reference table to be integrated with the database.
+
+
+<LI> If the term you want to use is not in the current GO, you can suggest
+one using the <B> Add Term </B> window.  It is very important that you also add suggested parents (term name and the GO ID), a definition and a reference for the definition (PMID:XXX or ISBN:XXXX and if no PMID available, add article ID).
+
+<LI>When annotating to a temporary term, this becomes (automatically) a temporary
+annotation.  When the temporary term becomes accepted (entered into
+GO), the annotation MUST be revisited to make sure that the term still
+applies. 
+
+
+<LI>Entering a relationship type for component terms:  use
+<UL TYPE = disc>
+	<LI> expressed in: for mRNA localization
+	<LI> located in: for protein expression
+</UL>					 
+
+<LI>When selecting papers, try the most recent paper
+first,then track down the cloning paper (if it exists).  Reviews might
+be helpful in tracking down the appropriate paper you need for making
+the annotation.  
+
+<LI>When reading/validating papers/abstract, take the
+time to note in the comments section (hit mode) what the main point of
+the paper was (i.e. cloning, localization, mutant phenotype).  We
+discussed the pros and cons of a controlled vocabulary.  For now,
+short phrases will suffice. (Currently not being done 5-19-06)  
+
+<LI>Try to stick to 1-2 papers per
+ontology.  If you can get away with less, great.  
+
+<LI>Sometimes the term you want may exist in a slightly different form: different spelling,
+different wording.  Try out a couple of versions before giving up and proposing a new term.
+
+<LI>Granularity: From
+the description,find the best GO term, if the term needed is not
+there, try to put it in.  Don't worry about looking at the children of
+the best GO term at this point to see if there is information about
+this gene that would fit a more granular term. (In other words, don't
+look into more papers to see if you can get even more granular than
+the current best GO term.)  
+
+<LI>Again, if an appropriate term does not
+exist, CREATE one!
+
+<LI><U>Making linked annotations.</U>  For example, you want to annotate a gene that is expressed in germinating seeds.  Annotate to the anatomical term 'seed' and add the TAIR ID for the developmental stage term 'germination' in the comment field for this annotation.  ALSO, separately annotate to the developmental stage term 'germination'.  The comment in the anatomy annotation will serve to tie it to the developmental stage annotation until we can do combinatorial annotations.
+
+</UL><BR><BR>
+
+<CENTER><A NAME = "expression"><B>Annotation of Gene Expression</B></A></CENTER>
+<BR><BR>
+<UL>
+<LI>  Use only the following evidence types when annotating expression patterns in anatomical parts or developmental stages: IDA, IEP, NAS, TAS.
+<LI>  Use only the relationship types containing the word 'expressed' or 'located' when annotating expression patterns in anatomical parts or developmental stages.
+<LI> When annotating process terms using <B> IEP </B> use primarily with terms beginning with 'response to.'  Other process terms may be used with IEP evidence code but only if the paper is extremely explicit and the evidence is clear.  Bring such cases up in the curator meeting so that we can all learn from the experience.
+<LI>In cases where there is experimental evidence for expression of a gene after exposure to an environmental or chemical treatment (light, abscisic acid...), we will make annotations to the 'response to xxx' term with the relationship type 'involved in' and the evidence code IEP.  (9/06/05)<BR>
+<U>Reason:</U>  Definition of the 'response to xxx' terms is broad enough to cover these situations. The annotation will be of use to people looking at the bulk files (and don't read the summaries), can be used for comparisons.
+<LI>We will also make the annotation to the anatomical part/tissue used in the experiment, if this information is available.
+<LI>We will also add this information into the gene summary field.
+<LI>We will not use user-defined terms (UD:xxxxxxx) for annotation. (9/1/05)<BR>
+<U>Reason:</U>
+<OL>
+<LI>User-defined terms were not added for this purpose (annotation of genes).  They were added for annotation of microarray experimental factor and community research interests.  Terms are a flat list and a mix of concepts (chemicals, environmental factors, germplasm names, treatments). Also:
+<LI>Annotations using these terms are not currently sent to TAIR.
+<LI>TAIR is not currently set up to display these types of annotations.
+<LI>User defined terms are currently not displayed in the keyword browser, cannot be searched/browsed using the keyword browser. 
+</OL>
+
+</UL><BR><BR>
+
+
+<CENTER><A NAME = "codes"><B>Evidence Code Usage</B></A> </CENTER>
+<BR><BR>
+<UL>
+<LI> For a general intro to using evidence codes read the <a href="http://www.geneontology.org/doc/GO.evidence.html"> GO consortium evidence code descriptions</a>.
+<LI> Using<b> ND</B> (no biological data available): use this when you look
+but find no information that is useful for annotating to any of the three
+ontologies.
+
+<LI>When annotating sequences based on <B>sequence similarity</B>, use ISS if
+based on blast or alignment in paper.  Reference the paper where the alignment appears.
+If the reference is a Genbank
+entry, don't annotate for now.  When we have the ability to use Genbank records as references, use NAS as the evidence code. If there is simply an author statement about
+similarity (no evidence presented), use TAS.  Try to fill in the 'Evidence With' column with the TAIR:gene:tair_gene_id, if you can.
+
+
+<LI> For example, paper is about a Pea gene that has been characterized experimentally but there is no experimental evidence about the Arabidopsis homolog, do not annotate using IDA.  Only annotate using ISS if there is an alignment or a phylogenetic tree shown in the paper.
+
+
+<LI>Immunolocalization
+and GFP or GUS tagging fall under <B>IEP</B>.
+
+
+<LI>Gel shift assays fall under <B>IDA</B>. Midori: "In this case I would use IDA, because the assay directly detects the
+protein binding to DNA. For functions like protein binding or nucleic acid
+binding, a binding assay is simultaneously IPI and IDA. The IPI code is
+intended more for cases where a physical interaction detected by an assay
+supports annotation to a process term or to a function other than binding
+something. For example, a protein might be annotated to 'transcription
+regulation' based on interaction with a known transcription factor."
+
+<LI>Controversial issue: Using
+TAS, should we be liberal or sparing?  Sparing, try to track down the original ref if you can..  Liberal use may lead to useless annotation.
+
+<LI>When making an annotation based SOLELY on information obtained from a meeting abstract,
+use the evidence code NAS. But try to avoid making these types of annotations in the first place.
+
+<LI>If you confirm an IEA annotation by redoing the analysis manually or examining the analysis, you can change the evidence code to be ISS with the appropriate evidence description.  Retain the evidence with information.  
+
+<LI>We can use ISS to annotate gene products to the 'membrane' component term based on
+recognized domains (trans-membrane domain prediction programs).
+
+<LI>We can use ISS to annotate gene products to a process term but consider the evidence
+carefully.  Does it have all the right residues/domains?
+
+<LI>When there is an ISS annotation in conflict with an experimentally based evidence code annotation, remove the ISS and keep the other annotation.
+<LI>When there is an ISS annotation to a parent term and an experimentally based evidence code annotation to a child of that parent term, keep the more granular evidence based annotation and remove the ISS annotation.
+<LI> IDA Evidence descriptions for Proteomics experiments:
+     <OL>
+     <LI> protein separation and direct sequencing
+(To include things like Edman degradation).
+     <LI>protein separation and fragment identification
+(To include things like: 2D PAGE and MALD-TOF MS, 1D SDS-PAGE and ESI
+MS/MS, ESI MS, Liquid chromatography and Tandem MS, and Q-TOF MS)
+     </OL>
+<LI> We have decided to use the evidence code IC in limited cases, which are listed below.  We will begin implementation of this evidence code in Dec. 2004. (decided on 1-22-04)
+      <OL>
+      <LI> When annotating a subunit of a complex where the function of the subunit is unknown but the function of the complex is known.
+          <UL>
+          <LI> use if the process is very well characterized in other organisms
+               <UL>Valid Concepts to use this with
+               <LI> photosynthesis
+               <LI> translation
+               <LI> electron transport (cytochrome related) 
+               </UL>
+          <LI> use if there is DIRECT evidence for this subunit belonging to the complex
+          <LI> format will be:  gene product X 'contributes to' function GO:1 evidence with 'GO:2' where GO:2 = GO id of the complex
+          </UL>
+      <LI> When annotating a gene product that catalyzes the first step of a reaction in a biosynthetic pathway to the biosynthesis of the endproduct of the pathway. 
+          <UL>
+          <LI> format will be: gene product X 'involved in' GO:3 evidence with GO:4;GO:5;GO:6 where GO:3 = biological process term for xxx biosynthesis and GO:4,5,6 = molecular function terms for activity of gene products that catalyze all the steps in the pathway
+          </UL>
+      </OL> 
+</UL>
+<BR>
+<BR>
+
+
+<p>
+
+
+
+
+
+<CENTER><A NAME="Strategies"><B>Gene Selection Strategies Past, Present and Future</B></a></CENTER> <BR><BR>
+
+These are the strategies we've used, are using and are planning to use to select genes for annotation.
+<UL>
+<LI> Curator's area of interest (done)
+<LI> Cellular compartment (done)
+<LI> Genes with hits to papers containing TAIR-added GO terms (done)
+<LI> Genes that belong to loci with no TAIR or TIGR annotations, that have valid or null hits to non-meeting abstract references (articles) (done)
+<LI> Genes that were dropped during previous gene-selection strategies.  We should return to this list every six months or so.  Each curator can revisit their own list.  (There are currently 26 dropped genes. 10-16-03) (done)
+<LI> Genes attached to loci where not all 3 GO aspects have been annotated.
+<LI> Genes with annotations to 'MF unknown', 'BP unknown' or 'CC unknown' that have new valid or null hits (non-meeting abstract).
+<LI> Genes with unvalidated new publications. New with respect to the last annotation date. (Example: Last annotated on 10-10-02, paper came out in Jan. 2003)
+</UL>
+
+<B><I>A paradigm shift:  looking at articles instead of genes </B></I>
+<UL>
+<LI> Look at all new papers that come in.  Update existing genes, annotate new genes.(started mid-March 2005)
+<LI> Look into orphan papers that don't have any valid hits to genes, scan for hits in full text in this subject.
+<LI> Look at the chapters of 'The Arabidopsis Book' (online book).  See if all genes covered in individual chapters are covered in Pub/TAIR.
+</UL>
+<BR>
+<B>Note:</B>  New genes will continue be added to Pub every month after the
+latest load from Pubmed
+
+<BR>
+
+<P>
+<center><I>Last modified by Tanya Berardini 19 May 2006<BR>
+Questions? Comments? Suggestions? <A href="mailto:tberardi@acoma.stanford.edu">Email Tanya. </A> </I></center>
+</blockquote>
+</body></html>

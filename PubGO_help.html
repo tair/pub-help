@@ -1,0 +1,100 @@
+
+<html><head><title>Pub GO Annotation Page Help</title></head>
+<BR>
+<body bgcolor="#FfFfFF">
+<CENTER><H2>Pub GO Annotation Page Help </H2></CENTER>
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+<TD><CENTER>
+
+<A HREF="#termdetails">Term Details</A>|
+<A HREF="#evidence">Evidence</A>|
+<A HREF="#esource">Evidence Source</A> |
+
+</CENTER></TD><BR><BR>    
+
+<p>
+<UL>
+This page is meant to guide you in filling in the PubSearch Controlled Vocabulary Annotation interface.  For definitions of fields
+and format of GO annotation files see:
+<a href="http://www.geneontology.org/doc/GO.annotation.html#file"> Annotation
+file format</a>. <BR><BR>
+
+<BR><BR>
+
+<B>Further reading:</B> <BR>
+<UL>
+<LI> <A href="GO_help.html">GO Curation and Annotation Guide</A>
+<LI> <A href="AGP_help.html">Allele, Phenotype, Germplasm Annotation Guide</A>
+<LI> <A href="pub_help.html">TAIR's General Annotation Guide</A>
+</UL>
+<BR><BR>
+
+
+
+
+<BR>
+
+<B>General comments</B><br> 
+
+The term_annotation table describes a relationship between two terms: a subject term and an object term. We specify the specific relationship between subject and object through a foreign key reference relationship_type_id to the relationship_type table.  To support this relationship, we quote the supporting
+evidence with the evidence_source_id and evidence_source_table, which
+will, in most cases, point to a publication or article. We also store
+additional information about the evidence within the evidence_with and
+evidence_description fields. We will declare what kind of evidence
+(IDA, NR, ISS, IEA,... etc) this is with an evidence_type_id.<br><BR>
+
+<B>Explanation of the fields/boxes in the Pub GO annotation page</B><BR><BR>
+
+<A NAME="termdetails"> <U><B>term details</u></B>: </A> <BR><BR>
+<UL>
+
+<LI><B>Term name</B>: name of the term as it appears in GO/PO or the gene name if making a gene-to-gene annotation. You can input a term in this box and if you select Search Term, this will use your term as a query of the built-in keyword browser. You can select a term using the modified browser which will grab the term and insert the name string and GO id into the annotation page.<br>
+<LI><B>External id</B>: the unique accession for the GO/PO term. syntax is GO:nnnnnnn or PO:nnnnnnn. This is automatically inserted when a term is selected from the keyword browser.<br>
+<LI><B>Temp Annotation</B>:This is meant to indicate annotation to a provisional term (e.g. one not added to GO or other ontologies such as anatomy and temporal). Should be temp_annotation.<br>
+<LI><B>Relationship</B>: this describes the relationship between the subject (e.g. gene product) and the object (e.g. term, or other gene product). <B>You should be able to remove this relationship and still have the GO term be applicable to the gene.  If this is not true, choose another GO term.</B>
+<UL type=disc>
+    <LI>1.[subject] gene term required for [object] GO term
+    <LI>2.[subject] gene term involved in [object] GO term
+    <LI>3.[subject] gene term functions as [object] GO term
+    <LI>4.[subject] gene term expressed in [object] GO term
+    <LI>5.[subject] gene term located in [object] GO term
+    <LI>6.[subject] gene term related to [object] GO term<br>
+ We support negative evidence with additional entries.<br>
+    <LI>1.[subject] gene term not required for [object] GO term
+    <LI>2.[subject] gene term not involved in [object] GO term
+    <LI>3.[subject] gene term not functions as [object] GO term
+    <LI>4.[subject] gene term not expressed in [object] GO term 
+    <LI>5.[subject] gene term not located in [object] GO term
+    <LI>6.[subject] gene term not related to [object] GO term
+</UL>
+</UL><BR>
+
+<A NAME = "evidence"><u><B>evidence</u></B>: </A>this section is for providing details for the evidence with supports the relationship defined between the subject and object.<br><br>
+<UL>
+<LI><B>Evidence With</B>: This field is meant to hold database identifiers that define an object that defines a condition that supports the evidence (e.g. the genbank id of the sequence that supports an ISS evidence, or the identifier for a gene product that supports an IGI evidence). 
+
+<br> 
+<UL>
+<LI>For TAIR genes, the syntax is TAIR:gene:accession. <br> Example:  TAIR:gene:1234344 
+<LI>In situations where more than one object is valid separate multiple entries with a pipe (|). <br> Example: TAIR:gene:1234556|TAIR:gene:546788|TAIR:gene:4893823 
+</UL>
+
+You can find the correct TAIR id to enter from the Pub Gene Detail page (right under the Is obsolete band, called TAIR Accession) or on the GO Annotation page (right beside the gene name, called TAIR accession)  a list of GO certified database abbreviations see <a href="http://www.geneontology.org/doc/GO.xrf_abbs">GO external reference abbreviations.</a><br>
+<LI><B>type</B>: the three letter evidence code <a href="http://www.geneontology.org/doc/GO.evidence.html"> GO consortium evidence code descriptions.</a><br>
+ <LI><B>description</B>:a slightly longer (up to 255 character) description of the evidence. The descriptions are listed as subtypes of evidence classes (ordered by code). If you want to add a new description (e.g. IEP: inferred from reporter gene fusion) that is not represented in the dropdown menu, email the request to 'curator' and we'll add it, if necessary.<br>
+</UL>
+<BR>
+<A NAME="esource"><u><B>evidence source</u></B></A>:the source of the evidence (the experiment or analysis). Most often this will be a publication (found in the article table) but might be a communication (e.g. for ND annotations). This is a pointer to some reference where the experimental evidence is described.  Click on the appropriate reference button and then select the appropriate reference to use.<br><BR>
+
+</UL>
+<BR>
+<BR>
+
+
+<center><I>Last modified by Tanya Berardini 19 May 2006<BR>
+Questions? Comments? Suggestions? <A href="mailto:tberardi@acoma.stanford.edu">Email Tanya. </A> </I></center>
+</blockquote>
+</body></html>

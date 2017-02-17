@@ -1,0 +1,3391 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<title>PubSearch Schema Documentation</title>
+<body bgcolor="#FFFFFF" class="Normal" lang=EN-US>
+ <h2>PubSearch Schema Documentation</h2>
+<P>Notes: 2003-07-14 The following represents the documentation of currently active 
+    tables. Inconsistencies are minor but  there are a few major clean-up that 
+    is required:
+<OL>
+<LI>Separating out TAIR and other External DB ids into a generic XDB_REF
+ <LI> Moving Replaced_by to UpdateHistory
+<LI>Separation of NucleotideSequence and AASequence from pub_sequence table
+</OL>
+<P><B>Overview</b></p>
+  Tables
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=32 valign=top> <b>#</b></p></td>
+      <td width=227 valign=top> Table Name</td>
+      <td width=379 valign=top> <b>Description</b></td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>1</b></td>
+      <td width=227 valign=top> <b>term</b></td>
+      <td width=379 valign=top>The terms table contains all terms that can potentially 
+          be used for indexing the articles. There are 12 types of terms including 
+          the 3 GO types process (proc), function (func), compartment (comp) plus 
+          the root type, which is above the three GO aspects. The anatomy (anat) 
+          and development (deve) types are vocabularies defined at TAIR, user 
+          defined terms (user) are essentially terms that user use to describe 
+          microarray experiments in the TAIR database. The 'gene' type denotes 
+          the terms that are actual or potential gene names. If a term is a gene 
+          term, it is linked to a pub_gene entry.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>2</b></td>
+      <td width=227 valign=top> <b>term_type</b></td>
+      <td width=379 valign=top>This table stores Information about the types of terms managed 
+          in this database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>3</b></td>
+      <td width=227 valign=top> <b>term_alias</b></td>
+      <td width=379 valign=top>This table contains synonyms and other aliases for all terms 
+          other than gene aliases, which are stored In pub_gene_alias table. In 
+          the future version of the database, we plan to merge these two tables.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>4</b></td>
+      <td width=227 valign=top> <b>term2term</b></td>
+      <td width=379 valign=top>The term2term table links two terms to define a parent-child 
+          relationship. It also contains a description of the relationship in 
+          the 'relation_ship_type' field; currently, these are part_of, instance_of, 
+          and develops_from.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>5</b></td>
+      <td width=227 valign=top> <b>pub_reference</b></td>
+      <td width=379 valign=top>This table is a parent table of all types of references in this 
+          database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>6</b></td>
+      <td width=227 valign=top> <b>article</b></td>
+      <td width=379 valign=top>The article table contains the information related to one 
+          article. It links to the pub_source table for the journal or book information. 
+          It also contains information on how the article is available: as a hard 
+          copy, electronically and whether it is available at all in the institution, 
+          etc. </td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>7</b></td>
+      <td width=227 valign=top> <b>PubSource</b></td>
+      <td width=379 valign=top> <p>This 
+          table stores sources of articles such as book, journal, conference proceedings, 
+          dissertation etc.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>8</b></td>
+      <td width=227 valign=top> <b>PubSourceAlias</b></td>
+      <td width=379 valign=top>This table stores synonyms and other aliases of PubSources.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>9</b></td>
+      <td width=227 valign=top> <b>pub_communication</b></td>
+      <td width=379 valign=top>This table stores references that are personal communications from 
+          researchers.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>10</b></td>
+      <td width=227 valign=top> <b>pub_analysis_reference</b></td>
+      <td width=379 valign=top>This table stores references that are based on computational analyses 
+          done in-house.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>11</b></td>
+      <td width=227 valign=top> <b>pub_database_reference</b></td>
+      <td width=379 valign=top> This table stores references that are external databases.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>12</b></td>
+      <td width=227 valign=top> <b>URL</b></td>
+      <td width=379 valign=top>This stores URL.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>13</b></td>
+      <td width=227 valign=top> <b>URL_linking</b></td>
+      <td width=379 valign=top>This is a linking table between URL and any other tables in the 
+          database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>14</b></td>
+      <td width=227 valign=top> <b>hit</b></td>
+      <td width=379 valign=top> This table stores information 
+          about matches between terms and articles. Currently the hits’ are generated 
+          by exact matching using suffix trees. We are currently testing using 
+          Lucene algorithm as well as using fgrep utility to improve performance. 
+          The entries in this table can be validated manually by curators.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>15</b></td>
+      <td width=227 valign=top> <b>stop_words</b></td>
+      <td width=379 valign=top>This table contains stop words that the indexing script 
+          should avoid to index.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>16</b></td>
+      <td width=227 valign=top> <b>pub_gene</b></td>
+      <td width=379 valign=top> <i><span style='font-family:
+  Helvetica-Oblique;'>The pub_gene table contains all the information specific 
+          to a TAIR gene model. A TAIR gene model essentially captures the transcript 
+          and protein information and is linked to a locus, which denotes a segment 
+          on the chromosome. </i></td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>17</b></td>
+      <td width=227 valign=top> <b>pub_gene_alias</b></td>
+      <td width=379 valign=top> <p class=MsoBodyText>This table 
+          stores information about all the synonyms and other aliases for terms 
+          that are genes. In the future we plan to merge this table with term_alias 
+          table information.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>18</b></td>
+      <td width=227 valign=top> <b>gene_model_type</b></td>
+      <td width=379 valign=top> <p class=MsoBodyText>This table 
+          stores information about different types of gene models.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>19</b></td>
+      <td width=227 valign=top> <b>pub_sequence</b></td>
+      <td width=379 valign=top> <i>This table stores sequences. In the future, this will be separated 
+          to store nucleotide and amino acid sequences separately.</i></td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>20</b></td>
+      <td width=227 valign=top> <b>pub_sequence_pub_gene</b></td>
+      <td width=379 valign=top> <i>This is a linking table between sequences and genes.</i></td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>21</b></td>
+      <td width=227 valign=top> <b>pub_locus</b></td>
+      <td width=379 valign=top>
+  Helvetica-Oblique;'>This table contains locus information. It is linked to pub_gene 
+          through a linking table, so that many genes can be linked to a locus, 
+          and conversely also many loci to one gene. This allows to represent 
+          trans-splicing in organellar genomes. </i><span
+  style='font-family:Helvetica;'> </td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>22</b></td>
+      <td width=227 valign=top> <b>pub_gene_locus</b></td>
+      <td width=379 valign=top>
+  Helvetica-Oblique;'>This table is a linking table between pub_gene and pub_locus. 
+          The reason for having a many to many relation ship between genes and 
+          loci are the trans-spliced genes in the mitochondrial genome.</i></td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>23</b></td>
+      <td width=227 valign=top> <b>term_annotation</b></td>
+      <td width=379 valign=top>
+This table stores the annotations; this is essentially a 
+          linking table between two terms. The subject term is usually the gene 
+          to be annotated and the object term is the controlled vocabulary term. 
+          The table also contains foreign keys to the evidence, reference, and 
+          relationship_type and other information relating to annotations.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>24</b></td>
+      <td width=227 valign=top> <b>evidence_type</b></td>
+      <td width=379 valign=top>This table stores different types of evidence used for annotations 
+          stored in term_annotation table. The types are consistent with what 
+          is being used by GO consortium.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>25</b></td>
+      <td width=227 valign=top> <b>evidence_description</b></td>
+      <td width=379 valign=top> This table stores more detailed evidence information for each evidence 
+          type. This is a more granular evidence ontology than evidence type.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>26</b></td>
+      <td width=227 valign=top> <b>relationship_type</b></td>
+      <td width=379 valign=top>This table contains types of relationship </td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>27</b></td>
+      <td width=227 valign=top> <b>comment</b></td>
+      <td width=379 valign=top>This table contains comments that can be associated to any other 
+          table in the database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>28</b></td>
+      <td width=227 valign=top> <b>annotation_task</b></td>
+      <td width=379 valign=top> ?</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>29</b></td>
+      <td width=227 valign=top> <b>user</b></td>
+      <td width=379 valign=top>This table stores information about registered users of the database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>30</b></td>
+      <td width=227 valign=top> <b>update_history</b></td>
+      <td width=379 valign=top> This is a new table that is under construction. It will store different 
+          type of updates done to data entries, particularly the many-to-many 
+          obsolete=replaced by relationships. Currently it is handled as one replaced 
+          by to many obsoleted, which is not accurate.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>31</b></td>
+      <td width=227 valign=top> <b>pub_allele</b></td>
+      <td width=379 valign=top> This is a new table under construction. It will store allele information.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>32</b></td>
+      <td width=227 valign=top> <b>pub_gene_pub_allele</b></td>
+      <td width=379 valign=top> This is a linking table between pub_gene and pub_allele.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>33</b></td>
+      <td width=227 valign=top> <b>pub_germplasm</b></td>
+      <td width=379 valign=top> This is a new table under construction. It will store germplasm 
+          (strain) information in this database.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>34</b></td>
+      <td width=227 valign=top> <b>pub_allele_pub_germplasm</b></td>
+      <td width=379 valign=top> This is a linking table between pub_allele and pub_germplasm.</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>35</b></td>
+      <td width=227 valign=top> <b>pub_phenotype</b></td>
+      <td width=379 valign=top> This is a new table under construction. This table stores information 
+          about phenotype description of germplasm (strain).</td>
+    </tr>
+    <tr> 
+      <td width=32 valign=top> <b>36</b></td>
+      <td width=227 valign=top> <b>pub_germplasm_pub_phenotype</b></td>
+      <td width=379 valign=top> This is a linking table between pub_germplasm and pub_phenotype.</td>
+    </tr>
+  </table>
+ Table Descriptions
+<b>term</b>
+The terms table contains all terms that can potentially be 
+    used for indexing the articles. There are 12 types of terms including the 
+    3 GO types process (proc), function (func), compartment (comp) plus the root 
+    type, which is above the three GO aspects. The anatomy (anat) and development 
+    (deve) types are vocabularies defined at TAIR, user defined terms (user) are 
+    essentially terms that user use to describe microarray experiments in the 
+    TAIR database. The 'gene' type denotes the terms that are actual or potential 
+    gene names. If a term is a gene term, it is linked to a pub_gene entry.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=175 valign=top> <b>Field name</b></td>
+      <td width=114 valign=top> <b>Datatype</b></td>
+      <td width=349 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> term_id </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> The primary id of the table.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> external_id</td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> External DB identifier such as GO id or POC id.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> name                          </td>
+      <td width=114 valign=top> varchar(200)</td>
+      <td width=349 valign=top> The terms name</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> type                             </td>
+      <td width=114 valign=top> varchar(4)</td>
+      <td width=349 valign=top> the term type; one of 'proc', 'func', 'comp', 'anat', 'deve', 'root', 
+          'user', 'meth', 'gene'</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> date_entered             </td>
+      <td width=114 valign=top> date</td>
+      <td width=349 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> entered_by                 </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign key to user table (user_id).</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> definition                     </td>
+      <td width=114 valign=top> text</td>
+      <td width=349 valign=top> definition text         </td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> reference          </td>
+      <td width=114 valign=top> varchar(100)</td>
+      <td width=349 valign=top> describing the reference for the term, such as a publication or</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> pub_gene_id            </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> a foreign key to the pub_gene table for the gene linked to this 
+          term (gene terms only)</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> is_temp                      </td>
+      <td width=114 valign=top> enum(‘y’,’n’)</td>
+      <td width=349 valign=top> whether term is a temporary term. Applies to recently imported gene 
+          terms that are not yet validated of to newly created GO terms that are 
+          not yet integrated into GO.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> date_updated          </td>
+      <td width=114 valign=top> date</td>
+      <td width=349 valign=top> Date last updated</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> updated_by             </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign key to user table (user_id) by whom last update was performed 
+          by.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> is_obsolete                </td>
+      <td width=114 valign=top> enum(‘y’,’n’)</td>
+      <td width=349 valign=top> whether the entry is obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> replaced_by               </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign key to term table (term_id) to designate the term that replaces 
+          this term.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> parentage                  </td>
+      <td width=114 valign=top> text</td>
+      <td width=349 valign=top> free text with information for the suggested parent term. Is populated 
+          from the term submission page for new temp terms. NULL for gene terms.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> tair_keyword_id        </td>
+      <td width=114 valign=top> int(12)</td>
+      <td width=349 valign=top> the keyword_id in the tair database used for synchronization of 
+          tair and pub.</td>
+    </tr>
+    <tr> 
+      <td width=175 valign=top> date_last_synchronized </td>
+      <td width=114 valign=top> date</td>
+      <td width=349 valign=top> the date of the last synchronization with tair. Used for pub to 
+          tair pipeline.</td>
+    </tr>
+  </table>
+<b>term_type</b>
+This table stores Information about the types of terms managed 
+    in this database.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=102 valign=top> <b>Datatype</b></td>
+      <td width=349 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> id</td>
+      <td width=102 valign=top> varchar(4)</td>
+      <td width=349 valign=top> Primary 
+          key of this table. It’s four-letter acronyms of the term type title.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> title</td>
+      <td width=102 valign=top> varchar(20)</td>
+      <td width=349 valign=top> types 
+          of terms in the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> description</td>
+      <td width=102 valign=top> text</td>
+      <td width=349 valign=top> description 
+          of the term types.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_updated</td>
+      <td width=102 valign=top> date</td>
+      <td width=349 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_obsolete</td>
+      <td width=102 valign=top> enum(‘y’,’n’)</td>
+      <td width=349 valign=top> whether the entry is obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_keyword_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> the keyword_id in the tair database used for synchronization of 
+          tair and pub.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_last_synchronized</td>
+      <td width=102 valign=top> date</td>
+      <td width=349 valign=top> the date of the last synchronization with tair. Used for pub to 
+          tair pipeline.</td>
+    </tr>
+  </table>
+<b>term_alias</b>
+This table contains synonyms and other aliases for all terms 
+    other than gene aliases, which are stored In pub_gene_alias table. In the 
+    future version of the database, we plan to merge these two tables.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=108 valign=top> <b>Datatype</b></td>
+      <td width=343 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> term_alias_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> Primary 
+          key of this table</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> term_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> Foreign 
+          key to the the term table (term_id) of the term this is an alias to.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> alias</td>
+      <td width=108 valign=top> varchar(100)</td>
+      <td width=343 valign=top> the 
+          actual alias. This field is always uppercased.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> original_alias</td>
+      <td width=108 valign=top> varchar(100)</td>
+      <td width=343 valign=top> the 
+          acutal alias, not uppercased.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> alias_type</td>
+      <td width=108 valign=top> varchar(20)</td>
+      <td width=343 valign=top> This 
+          field is not populated at the moment.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> reference_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> foreign 
+          key to the pub_reference table, describes the origin of the alias.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> community_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> the 
+          TAIR community ID for the person who submitted this alias.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_obsolete</td>
+      <td width=108 valign=top> enum('y','n')</td>
+      <td width=343 valign=top> whether the entry is obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_updated</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> updated_by</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> foreign 
+          key to the user table; the user who updated the record last.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_last_synchronized</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date 
+          when the last synchronization between pub and tair took place</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_synonym_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> the 
+          id of the synonym in the tair database. Is used to synchronize pub and 
+          tair.</td>
+    </tr>
+  </table>
+<b>term2term</b>
+The term2term table links two terms to define a parent-child 
+    relationship. It also contains a description of the relationship in the 'relation_ship_type' 
+    field; currently, these are part_of, instance_of, and develops_from.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=102 valign=top> <b>Datatype</b></td>
+      <td width=349 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> Primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> term1_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> Foreign 
+          key to the term table. Defines the hierarchy of the GO DAG. The parent 
+          term</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> term2_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> Foreign 
+          key to the term table. Defines the hierarchy of the GO DAG. The child 
+          term</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> relationship_type_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> a 
+          foreign key to relationship_type table; essentially describes 'part_of', 
+          and 'instance_of' and 'develops from' relationships</td>
+    </tr>
+  </table>
+<b>pub_reference</b>
+This table is a parent table of all types of references in this database.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=102 valign=top> <b>Datatype</b></td>
+      <td width=349 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> pub_reference_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> Primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_reference_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> reference 
+          id in TAIR database</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> table_name</td>
+      <td width=102 valign=top> varchar(30)</td>
+      <td width=349 valign=top> name 
+          of the child reference table such as article, pub_communication, etc.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> source_table_id</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign 
+          key to the primary key of the child table specificed by the table_name 
+          field</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_entered             </td>
+      <td width=102 valign=top> date</td>
+      <td width=349 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_updated</td>
+      <td width=102 valign=top> date</td>
+      <td width=349 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> entered_by                 </td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign key to user table (user_id).</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> updated_by</td>
+      <td width=102 valign=top> int(12)</td>
+      <td width=349 valign=top> foreign 
+          key to the user table; the user who updated the record last.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_last_synchronized</td>
+      <td width=102 valign=top> date</td>
+      <td width=349 valign=top> date 
+          when the last synchronization between pub and tair took place</td>
+    </tr>
+  </table>
+<b>article</b>
+ The article table contains the information related to one 
+    article. It links to the pub_source table for the journal or book information. 
+    It also contains information on how the article is available: as a hard copy, 
+    electronically and whether it is available at all in the institution, etc. 
+    
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=185 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=348 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> article_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> the 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> publication_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          publication_id of this entity in the TAIR database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> reference_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          reference_id of this entity in the TAIR database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> pub_source_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          PubSource id. Denotes the journal or book this article is from.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> title</td>
+      <td width=105 valign=top> text</td>
+      <td width=348 valign=top> The 
+          title of the article.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> type</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> The 
+          type of the publication. Currently, there are research_article, unknown, 
+          review, book_chapter, book, abstract, dissertation, press_article, erratum.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> authors</td>
+      <td width=105 valign=top> text</td>
+      <td width=348 valign=top> The 
+          author list given as one string.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> year</td>
+      <td width=105 valign=top> smallint(6)</td>
+      <td width=348 valign=top> The 
+          year of publication.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> issue</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> The 
+          issue</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> volume</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> the 
+          volume.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> medline_id</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> the 
+          medline id.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> biosis_id</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> the 
+          biosis id</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> agricola_id</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> the 
+          agricola_id</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> pubmed_id</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> the 
+          pubmed id.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> pubmed_central_id</td>
+      <td width=105 valign=top> varchar(12)</td>
+      <td width=348 valign=top> the 
+          pubmed central id.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> page_start</td>
+      <td width=105 valign=top> varchar(6)</td>
+      <td width=348 valign=top> the 
+          page number</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> abstract</td>
+      <td width=105 valign=top> text</td>
+      <td width=348 valign=top> the 
+          complete abstract text               </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_peer_reviewed</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> Whether 
+          the article was peer reviewed. Shouldn't this be in the pub_source?</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_print_reference</td>
+      <td width=105 valign=top> enum('y','n') 
+          </td>
+      <td width=348 valign=top> whether 
+          the article is printed</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_electronic_reference</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> Is 
+          this article available as an electronic copy?</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> link</td>
+      <td width=105 valign=top> varchar(255)</td>
+      <td width=348 valign=top> link 
+          to the electronic copy.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> ref_text 
+          </td>
+      <td width=105 valign=top> text</td>
+      <td width=348 valign=top> Not 
+          yet populated. Should contain a reference text that is used for the 
+          identification of duplicate before inserting a new article. (?)</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_local_hard</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> Is 
+          this article available as a hard copy locally?</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_downloaded</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> is 
+          the article downloaded?</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_scanned</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> has 
+          the article been scanned?</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> scanned_date</td>
+      <td width=105 valign=top> date         
+          </td>
+      <td width=348 valign=top> date 
+          the article was scanned and made electronic.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> scanned_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to user table.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> obsoletion 
+          status.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_entered             </td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> replaced_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to this table denoting what entity replaced this entity after obsoletion.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to the user table; the user who updated the record last.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> abstract_number</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> The 
+          number of the abstract if the record describes a conference abstract.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> full_text</td>
+      <td width=105 valign=top> longtext</td>
+      <td width=348 valign=top> full 
+          text of the article. Right now, this is not populated. </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+  </table>
+<b>PubSource</b>
+ This table stores sources of articles such as book, journal, conference 
+    proceedings, dissertation etc.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=108 valign=top> <b>Datatype</b></td>
+      <td width=343 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> pub_source_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> Primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> name</td>
+      <td width=108 valign=top> varchar(255)</td>
+      <td width=343 valign=top> name 
+          of the publication source (e.g. book title or journal name)</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> type</td>
+      <td width=108 valign=top> varchar(50)</td>
+      <td width=343 valign=top> type 
+          of the publication source (e.g. journal, book, dissertation, etc.)</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> publisher</td>
+      <td width=108 valign=top> varchar(100)</td>
+      <td width=343 valign=top> name 
+          of publisher</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> editors</td>
+      <td width=108 valign=top> varchar(255)</td>
+      <td width=343 valign=top> name(s) of editors</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> isbn_number</td>
+      <td width=108 valign=top> varchar(13)</td>
+      <td width=343 valign=top> ISBN 
+          number</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> issn_number</td>
+      <td width=108 valign=top> varchar(10)</td>
+      <td width=343 valign=top> ISSN number</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_pub_source_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> external 
+          identifier in TAIR DB</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_obsolete</td>
+      <td width=108 valign=top> enum('y','n')</td>
+      <td width=343 valign=top> obsoletion 
+          status.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> updated_by</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> foreign 
+          key to the user table; the user who updated the record last.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_updated</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_entered             </td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_last_synchronized</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> essn_number</td>
+      <td width=108 valign=top> varchar(10)</td>
+      <td width=343 valign=top> ESSN 
+          number</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_textbook</td>
+      <td width=108 valign=top> enum('y','n')</td>
+      <td width=343 valign=top> whether 
+          this is a text book.</td>
+    </tr>
+  </table>
+<b>PubSourceAlias</b>
+This table stores synonyms and other aliases of PubSources.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=193 valign=top> <b>Field 
+          name</b></td>
+      <td width=108 valign=top> <b>Datatype</b></td>
+      <td width=337 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> pub_source_alias_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=337 valign=top> Primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> pub_source_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=337 valign=top> foreign 
+          key to PubSource table</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> tair_pub_source_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=337 valign=top> PubSource 
+          id in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> tair_pub_source_alias_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=337 valign=top> PubSourceAlias 
+          id in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> alias</td>
+      <td width=108 valign=top> varchar(250)</td>
+      <td width=337 valign=top> the alias itself</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> is_standard</td>
+      <td width=108 valign=top> enum('y','n')</td>
+      <td width=337 valign=top> whether 
+          the alias is MEDLINE standard alias</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> is_obsolete</td>
+      <td width=108 valign=top> enum('y','n')</td>
+      <td width=337 valign=top> obsoletion 
+          status.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> updated_by</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=337 valign=top> foreign 
+          key to the user table; the user who updated the record last.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> date_updated</td>
+      <td width=108 valign=top> date</td>
+      <td width=337 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> date_entered             </td>
+      <td width=108 valign=top> date</td>
+      <td width=337 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=193 valign=top> date_last_synchronized</td>
+      <td width=108 valign=top> date</td>
+      <td width=337 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+  </table>
+<b>pub_communication</b>
+This table stores references that are personal communications from researchers.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=351 colspan=2 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_communication_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> primary 
+          key of this table.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> tair_communication_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> communication_id 
+          in TAIR DB. This field needs to be made generic.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> author</td>
+      <td width=105 valign=top> varchar(255)                                      
+          </td>
+      <td width=350 valign=top> the 
+          author list given as one string.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> name</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=350 valign=top> title 
+          of the communication</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> communication</td>
+      <td width=105 valign=top> text</td>
+      <td width=350 valign=top> body 
+          of the communication</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_entered</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the entry was loaded into the database.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> reference_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> ??</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          this record was touched last</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=350 valign=top> obsoletion 
+          status.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> entered_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that last updated the record.</td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+  </table>
+<b>pub_analysis_reference</b>
+This table stores references that are based on computational analyses 
+    done in-house.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=350 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_analysis_ref_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> tair_ref_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> reference_id 
+          in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> tair_analysis_ref_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> analysis_reference_id 
+          in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> analysis_software_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to analysis software in TAIR DB.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> name</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=350 valign=top> title 
+          of the analysis</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> parameters</td>
+      <td width=105 valign=top> text</td>
+      <td width=350 valign=top> parameters 
+          used</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> output_def_criteria</td>
+      <td width=105 valign=top> text</td>
+      <td width=350 valign=top> criteria 
+          for the results kept</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_run</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the anslysis was run</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_nucleotide</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=350 valign=top> whether 
+          the analysis is run on nucleotide sequence</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_peptide</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=350 valign=top> whether 
+          the analysis is run on amino acid sequence</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+  </table>
+<b>pub_database_reference</b>
+This table stores references that are external databases.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=214 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=320 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> pub_database_reference_id</td>
+      <td width=105 valign=top> int(11)</td>
+      <td width=320 valign=top> primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> tair_reference_id</td>
+      <td width=105 valign=top> int(11)</td>
+      <td width=320 valign=top> reference_id 
+          in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> name</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=320 valign=top> name 
+          of the database</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> description</td>
+      <td width=105 valign=top> text</td>
+      <td width=320 valign=top> description 
+          of the database</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> extdb_table</td>
+      <td width=105 valign=top> varchar(50)</td>
+      <td width=320 valign=top> table 
+          name</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> extdb_field</td>
+      <td width=105 valign=top> varchar(50)</td>
+      <td width=320 valign=top> field 
+          name</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> extdb_id</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=320 valign=top> id 
+          of the data</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> date_last_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=320 valign=top> date 
+          the entry was last updated</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=320 valign=top> foreign 
+          key to user table (user_id) for the user that last updated the record.</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> tair_database_reference_id</td>
+      <td width=105 valign=top> date</td>
+      <td width=320 valign=top> ??</td>
+    </tr>
+    <tr> 
+      <td width=214 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> int(11)</td>
+      <td width=320 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>URL</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This stores URL.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=350 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_url_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> the 
+          primary key of the table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> tair_url_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> url_id 
+          in TAIR DB. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> url</td>
+      <td width=105 valign=top> varchar(255)</td>
+      <td width=350 valign=top> url</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> web_site_name</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=350 valign=top> title 
+          of the website</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_entered</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the entry was last updated</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that last updated the record.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> entered_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=350 valign=top> obsoletion 
+          status.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>URL_linking</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This is a linking table between URL and any other tables in the database.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=350 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> linking_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> the 
+          primary key of the table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_url_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to the URL entry.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> table_name</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=350 valign=top> name 
+          of the table that the URL is linked to.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> table_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to the primary key of the table specificed in the table_name field</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_entered</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          the entry was last updated</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that last updated the record.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> entered_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> The 
+          date when the last synchronization took place. Used for the PubToTair 
+          pipeline.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>hit</b>
+  <h2>This table stores information about matches between terms and articles. 
+    Currently the ‘hits’ are generated by exact matching using suffix trees. We 
+    are currently testing using Lucene algorithm as well as using fgrep utility 
+    to improve performance. The entries in this table can be validated manually 
+    by curators.</h2>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=185 valign=top> <h1>Field name</h1></td>
+      <td width=123 valign=top> <b>Datatype</b></td>
+      <td width=331 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> match_id</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> the 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> term_id</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the term table (term_id). The term that was used to generate 
+          this hit.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> match_nr</td>
+      <td width=123 valign=top> int(11)</td>
+      <td width=331 valign=top> How 
+          many times the term matches in this article.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> article_id</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the article table (article_id). The article this hit is found 
+          in.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> in_title</td>
+      <td width=123 valign=top> enum('y','n')</td>
+      <td width=331 valign=top> Denotes 
+          whether the hit occurred in the title.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> in_abstract</td>
+      <td width=123 valign=top> enum('y','n')</td>
+      <td width=331 valign=top> Denotes 
+          whether the hit occurred in the abstract.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_valid</td>
+      <td width=123 valign=top> enum('y','n','m')</td>
+      <td width=331 valign=top> whether 
+          the hit is valid. This field is usually set manually by a curator who 
+          inspects hits for a specific gene. Contains NULL if the hit has not 
+          been verified, 'y' if valid, 'n' if not valid and 'm' if the hit may 
+          be valid.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> validated_by</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the user table. The user who validated this hit.                    
+          </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> search_date</td>
+      <td width=123 valign=top> date</td>
+      <td width=331 valign=top> the 
+          date the hit has been generated.  (?)             </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_validated</td>
+      <td width=123 valign=top> date</td>
+      <td width=331 valign=top> the 
+          date the hit was validated.                </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_entered</td>
+      <td width=123 valign=top> date                       
+          </td>
+      <td width=331 valign=top> date 
+          the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> entered_by</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> Is_obsolete</td>
+      <td width=123 valign=top> enum('y','n')</td>
+      <td width=331 valign=top> whether 
+          the hit is obsolete. Hits are obsoleted if the associated term or article 
+          is obsoleted.          </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_updated</td>
+      <td width=123 valign=top> date</td>
+      <td width=331 valign=top> The 
+          date the record has been last updated.                </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> updated_by</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the user table. The user who last updated the hit.             
+          </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_last_synchronized</td>
+      <td width=123 valign=top> date</td>
+      <td width=331 valign=top> the 
+          date the last synchronization occurred with the TAIR database.    </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> relationship_type_id</td>
+      <td width=123 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the relationship type table. This defines the relationship between 
+          an article and term in the hit table. Currently the default is ‘matches’.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>stop_words</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table contains stop words that the indexing script should 
+    avoid to index.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=110 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=422 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=110 valign=top> stop_word_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=422 valign=top> the 
+          primary key of the table.</td>
+    </tr>
+    <tr> 
+      <td width=110 valign=top> stop_word</td>
+      <td width=105 valign=top> varchar(200)</td>
+      <td width=422 valign=top> The 
+          stop word.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_gene</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>The pub_gene table contains all the information specific to 
+    a TAIR gene model. A TAIR gene model essentially captures the transcript and 
+    protein information and is linked to a locus, which denotes a segment on the 
+    chromosome. 
+  <table border=1 cellspacing=0 cellpadding=0 width=638>
+    <tr> 
+      <td width=187 valign=top> <b>Field 
+          name</b></td>
+      <td width=108 valign=top> <b>Datatype</b></td>
+      <td width=343 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> pub_gene_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> the 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> gene_tair_obj_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> the 
+          tair object id of this gene</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> name</td>
+      <td width=108 valign=top> varchar(50)</td>
+      <td width=343 valign=top> the 
+          name of this gene.  This should be a symbol type name.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> gene_model_type_id</td>
+      <td width=108 valign=top> int(12)</td>
+      <td width=343 valign=top> foreign 
+          key to the gene_model_type table. Defines if the gene codes for a protein, 
+          trna or other types of rna genes, or if it is a pseudogene.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_verified</td>
+      <td width=108 valign=top> enum('Y','N')</td>
+      <td width=343 valign=top> Describes 
+          whether the gene structure of this gene has been verified experimentally 
+          but is populated inconsistently in the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_predicted</td>
+      <td width=108 valign=top> enum('Y','N') 
+          </td>
+      <td width=343 valign=top> whether 
+          the gene annotation is the result of a computationl prediction. Is generally 
+          set for TIGR genes although they may be based in large part on experimental 
+          results such as cdnas. </td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> verification_method</td>
+      <td width=108 valign=top> varchar(255)</td>
+      <td width=343 valign=top> free 
+          text verification method. 'cDNA sequencing' is the most often used description 
+          with many variants essentially describing the same thing. could be cleaned 
+          up!</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> summary</td>
+      <td width=108 valign=top> text</td>
+      <td width=343 valign=top> A 
+          brief summary in free text of what the gene function, location, expression 
+          etc.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> name_type</td>
+      <td width=108 valign=top> varchar(12)</td>
+      <td width=343 valign=top> Describes 
+          the type of the name; right now full, orf or symbol are in the database. 
+          </td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_entered             </td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date the entry was loaded into the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> updated_by</td>
+      <td width=108 valign=top> int(12)        
+          </td>
+      <td width=343 valign=top> foreign 
+          key to the user table</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_updated</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top> date 
+          this record was touched last</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> entered_by</td>
+      <td width=108 valign=top> int(12)        
+          </td>
+      <td width=343 valign=top> foreign 
+          key to the user table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_map_element_id</td>
+      <td width=108 valign=top> int(12)        
+          </td>
+      <td width=343 valign=top> the 
+          tair map_element_id in the tair database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> tair_gene_id</td>
+      <td width=108 valign=top> int(12)        
+          </td>
+      <td width=343 valign=top> gene_id 
+          in TAIR database.  This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_obsolete</td>
+      <td width=108 valign=top> enum('Y','N')        
+          </td>
+      <td width=343 valign=top> obsoletion 
+          status</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> replaced_by</td>
+      <td width=108 valign=top> int(12)        
+          </td>
+      <td width=343 valign=top> foreign 
+          key to the another entry in pub_gene table that replaces this entry. 
+          In the future, this will be moved out into update_history table to accomodate 
+          many-to-many relationship.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> description</td>
+      <td width=108 valign=top> text    
+          </td>
+      <td width=343 valign=top> detailed 
+          information of the gene that is not appropriate to be included in the 
+          summary.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_sequenced</td>
+      <td width=108 valign=top> enum('Y','N')  
+          </td>
+      <td width=343 valign=top> whether 
+          the gene has been sequenced.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> chromosome</td>
+      <td width=108 valign=top> varchar(10)</td>
+      <td width=343 valign=top> the 
+          chromosome this gene is located on. numbers designate the nuclear chromosomes, 
+          MT and CP the mitochondrion and chloroplast, repectively.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> length</td>
+      <td width=108 valign=top> float</td>
+      <td width=343 valign=top> the 
+          length of the gene in the units given in the 'unit' field.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> unit</td>
+      <td width=108 valign=top> char(2)</td>
+      <td width=343 valign=top> the 
+          units of the length measurement. bp and kb are currently defined.       
+          </td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> validated_by</td>
+      <td width=108 valign=top> int(12)   
+          </td>
+      <td width=343 valign=top> foreign 
+          key to the user table.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> submitted_by</td>
+      <td width=108 valign=top> int(12)   
+          </td>
+      <td width=343 valign=top> the 
+          tair community id for the submitter.      </td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> taxonomy</td>
+      <td width=108 valign=top> varchar(50)</td>
+      <td width=343 valign=top> the 
+          taxonomic information. Right now, only columbia is in the database.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> object_type</td>
+      <td width=108 valign=top> varchar(20)</td>
+      <td width=343 valign=top> The 
+          type of gene entry, one of : gene, allele, gene_family</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> refseq_mrna_id</td>
+      <td width=108 valign=top> varchar(20)  
+          </td>
+      <td width=343 valign=top> The 
+          reseq mrna id for this gene</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> refseq_protein_id</td>
+      <td width=108 valign=top> varchar(20)  
+          </td>
+      <td width=343 valign=top> the 
+          genbank refseq for the protein of this gene.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> date_last_synchronized</td>
+      <td width=108 valign=top> date</td>
+      <td width=343 valign=top>    
+          When this entry was last synchronized.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_temp</td>
+      <td width=108 valign=top> enum('y','n')    
+          </td>
+      <td width=343 valign=top> whether 
+          this is a temporary gene. This are marked when genes are initially detected 
+          in articles using regular expressions and the genes have not been verified 
+          yet by curators.</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top>  cached_locus_has_annotations</td>
+      <td width=108 valign=top> enum('y','n')       
+          </td>
+      <td width=343 valign=top> Does 
+          this locus have annotations? Populated by a script (?)</td>
+    </tr>
+    <tr> 
+      <td width=187 valign=top> is_splice_variant</td>
+      <td width=108 valign=top> enum('y','n')  
+          </td>
+      <td width=343 valign=top> whether 
+          this gene model is a splice variant of this locus. Set when there are 
+          more than one gene model per locus to distinguish splice variants from 
+          alternative annotations.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_gene_alias</b>
+  <p class=MsoBodyText>This table stores information about all the synonyms and 
+    other aliases for terms that are genes. In the future we plan to merge this 
+    table with term_alias table information. float
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <b>Field 
+          name</b></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=350 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_gene_alias_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> The 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_gene_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to the pub_gene table denoting the gene for which this is an alias.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> alias</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=350 valign=top> the 
+          actual alias, always uppercased</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> original_alias</td>
+      <td width=105 valign=top> varchar(100)</td>
+      <td width=350 valign=top> the 
+          original alias, with capitalization as it appeared originally</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> alias_type</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=350 valign=top> the 
+          type, one of: alt_full_name, full_name, gene_product, orf, symbol.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> reference_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> (?) 
+          foreign key to the reference table, denotes the paper in which the alias 
+          was identified.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> community_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> The 
+          community id in the tair database for the submitter of this alias</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('Y','N')</td>
+      <td width=350 valign=top> whether 
+          the alias is obsolete</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> tair_gene_alias_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> the 
+          id of the alias in the tair GeneAlias table. Used for synchronization.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to the user table for the last updater</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> date 
+          of last update </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_reference_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> foreign 
+          key to pub_reference for the reference in which the alias information 
+          was found.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=350 valign=top> The 
+          date of the last synchronization. Used for the PubToTair pipeline.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>gene_model_type</b>
+  <p class=MsoBodyText>This table stores information about different types of 
+    gene models.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <b>Field 
+          name</b></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=350 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> gene_model_type_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=350 valign=top> The 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> gene_model_type</td>
+      <td width=105 valign=top> varchar(25)</td>
+      <td width=350 valign=top> type 
+          of gene models in this database. Genetic loci that are not cloned yet 
+          have gene models of type ‘unknown’.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_sequence</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This table stores sequences. In the future, this will be separated 
+    to store nucleotide and amino acid sequences separately.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=205 valign=top> <h1>Field name</h1></td>
+      <td width=126 valign=top> <b>Datatype</b></td>
+      <td width=306 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> sequence_id</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> The 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> tair_sequence_id</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> sequence_id 
+          in TAIR database. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> tair_object_id</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> tair_object_id 
+          of the sequence in TAIR database. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> sequence_type</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> whether 
+          the sequence is nucleotide or amino acid.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> aa_sequence_type</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> type 
+          of amino acid sequence. This field has never been populated.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> nucleotide_sequence_type</td>
+      <td width=126 valign=top> enum('genomic', 
+          'mRNA')</td>
+      <td width=306 valign=top> source 
+          of nucleotide sequence</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> genome_type</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> source 
+          of the genome for the nucleotide sequence (e.g. nuclear, mitochondrial, 
+          chloroplast)</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> sequence_class</td>
+      <td width=126 valign=top> varchar(30)</td>
+      <td width=306 valign=top> nucleotide 
+          sequence types that are more consistent with the types of databases 
+          in Genbank. This typing is related the biological objects the sequence 
+          is associated with.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> name</td>
+      <td width=126 valign=top> varchar(50)</td>
+      <td width=306 valign=top> name 
+          of the sequence. Currently the name is propagated from the name of the 
+          associated object.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> definition</td>
+      <td width=126 valign=top> varchar(255)</td>
+      <td width=306 valign=top> definition 
+          of the sequence in GenBank if the sequence is from GenBank.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> db_name</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> name 
+          of the source database from which the sequence came.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> db_accession</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> accession 
+          of the source database from which the sequence came.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> genbank_accession</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> genbank 
+          accession for the sequence (if the db_name and db_accession are not 
+          from GenBank). We need to have a more generic many-to-many relationship 
+          for the external db identifiers.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> genbank_gi</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> genbank 
+          gi for the sequence (if the db_name and db_accession are not from GenBank). 
+          We need to have a more generic many-to-many relationship for the external 
+          db identifiers.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> sequence</td>
+      <td width=126 valign=top> longtext</td>
+      <td width=306 valign=top> text 
+          of the sequence</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> is_cds</td>
+      <td width=126 valign=top> enum('Y','N')</td>
+      <td width=306 valign=top> whether 
+          the sequence represents coding sequence</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> is_full_length</td>
+      <td width=126 valign=top> enum('y','n')</td>
+      <td width=306 valign=top> whether 
+          the sequence is full-length</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> is_obsolete</td>
+      <td width=126 valign=top> enum('Y','N')</td>
+      <td width=306 valign=top> whether 
+          the sequence is obsolete</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> replaced_by</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> foreign 
+          key to another sequence entry that replaces this entry. This will be 
+          moved into update_history table later.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> community_id</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> community_id 
+          in TAIR database. This needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> organization</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> name 
+          of the organization for the community_id. Not clear why this field is 
+          there.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> date_entered</td>
+      <td width=126 valign=top> date</td>
+      <td width=306 valign=top> the 
+          date this entity was created.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> date_updated</td>
+      <td width=126 valign=top> date</td>
+      <td width=306 valign=top> date 
+          of last update </td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> updated_by</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> foreign 
+          key to the user table for the last updater</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> species_variant_id</td>
+      <td width=126 valign=top> int(12)</td>
+      <td width=306 valign=top> species_variant_id 
+          in TAIR db that represents ecotype of the sequence. This needs to be 
+          made more generic.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> calc_pi</td>
+      <td width=126 valign=top> double</td>
+      <td width=306 valign=top> calculated 
+          isoelectric point for the amino acid sequence</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> calc_mw</td>
+      <td width=126 valign=top> double</td>
+      <td width=306 valign=top> calculated 
+          molecular weight for the amino acid sequence</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> swissprot_id</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> swiss-prot 
+          id for the amino acid sequence if the db_name is not swiss-prot</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> ec_number</td>
+      <td width=126 valign=top> varchar(20)</td>
+      <td width=306 valign=top> enzyme 
+          commission accession. This is another example of the external database 
+          ids.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> date_last_synchronized</td>
+      <td width=126 valign=top> date</td>
+      <td width=306 valign=top> The 
+          date of the last synchronization. Used for the PubToTair pipeline.</td>
+    </tr>
+    <tr> 
+      <td width=205 valign=top> md5sum</td>
+      <td width=126 valign=top> varchar(32)</td>
+      <td width=306 valign=top> a 
+          checkum result to distinguish unique sequences</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_sequence_pub_gene</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This is a linking table between sequences and genes.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=104 valign=top> <b>Datatype</b></td>
+      <td width=351 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> id</td>
+      <td width=104 valign=top> int(12)</td>
+      <td width=351 valign=top> The 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_sequence_id</td>
+      <td width=104 valign=top> int(12)</td>
+      <td width=351 valign=top> foreign 
+          key to the pub_sequence table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_gene_id</td>
+      <td width=104 valign=top> int(12)</td>
+      <td width=351 valign=top> foreign 
+          key to the pub_gene table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_obsolete</td>
+      <td width=104 valign=top> enum('Y','N')</td>
+      <td width=351 valign=top> whether 
+          the sequence is obsolete</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_updated</td>
+      <td width=104 valign=top> date</td>
+      <td width=351 valign=top> date 
+          of last update </td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=104 valign=top> int(12)</td>
+      <td width=351 valign=top> foreign 
+          key to the user table for the last updater</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=104 valign=top> date</td>
+      <td width=351 valign=top> The 
+          date of the last synchronization. Used for the PubToTair pipeline.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_locus</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table contains locus information. It is linked to pub_gene 
+    through a linking table, so that many genes can be linked to a locus, and 
+    conversely also many loci to one gene. This allows to represent trans-splicing 
+    in organellar genomes. <span
+style='font-family:Helvetica;'> 
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=185 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=348 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> pub_locus_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> tair_object_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          tair object id of this entity in the tair database. </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> tair_locus_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          tair locus id. <span style='background:yellow;'>Not consistently populated 
+          (?).</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> tair_me_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> The 
+          MapElement.map_element_id in the tair database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> taxon_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> the 
+          taxon information as it is stored in the TAIR database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> species_variant_id</td>
+      <td width=105 valign=top> int(12)   
+          </td>
+      <td width=348 valign=top> the 
+          species variant id as it is stored in the TAIR database.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> name</td>
+      <td width=105 valign=top> varchar(50)</td>
+      <td width=348 valign=top> The 
+          name of the locus.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> rep_gene_model_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to the pub_gene table (pub_gene_id). Denotes the representative 
+          gene model, ie, the gene model that should be selected among the different 
+          gene models associated to this locus for display purposes etc.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> tmp_name</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> a 
+          temporary symbolic name for a locus. </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> tmp_full_name</td>
+      <td width=105 valign=top> varchar(100) 
+          </td>
+      <td width=348 valign=top> temporary 
+          full name of the locus.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_sequenced</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> Whether 
+          the locus has been sequenced.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> chromosome</td>
+      <td width=105 valign=top> varchar(10)</td>
+      <td width=348 valign=top> chromosome. 
+          numbers designate the nuclear chromosomes, MT mitochondrial, CP chloroplast.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to the user table, user who made most recent update</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=348 valign=top> whether 
+          the entry is obsolete. The associated gene models should also be made 
+          obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> community_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> the 
+          community id from the tair database for the submitter of this information.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> replaced_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=348 valign=top> foreign 
+          key to this table denoting the entity that replaces this entry if it 
+          has been made obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> bac_name</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> The 
+          bac based name of this locus.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> refseq_locus_id</td>
+      <td width=105 valign=top> varchar(20)</td>
+      <td width=348 valign=top> The 
+          genbank refseq locus identifer for this entity.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_last_synchronized</td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> The 
+          date last synchronized. Used for the synchronization between pub and 
+          TAIR databases.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_entered</td>
+      <td width=105 valign=top> date</td>
+      <td width=348 valign=top> the 
+          date this entity was created.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_gene_locus</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table is a linking table between pub_gene and pub_locus. 
+    The reason for having a many to many relation ship between genes and loci 
+    are the trans-spliced genes in the mitochondrial genome.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=183 valign=top> <h1>Field name</h1></td>
+      <td width=99 valign=top> <b>Datatype</b></td>
+      <td width=356 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_gene_locus_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=356 valign=top> the 
+          primary key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_locus_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=356 valign=top> foreign 
+          key to the pub_locus table. denotes a locus that is linked to the gene 
+          given in the pub_gene_id field.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> pub_gene_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=356 valign=top> foreign 
+          key to the pub_gene table. The gene that is linked to the locus given 
+          in the pub_locus_id field.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> Date_updated</td>
+      <td width=99 valign=top> date</td>
+      <td width=356 valign=top> date 
+          when last updated.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> updated_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=356 valign=top> foreign 
+          key to the user table denoting the user who made the most recent update.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> is_obsolete</td>
+      <td width=99 valign=top> enum('y','n')</td>
+      <td width=356 valign=top> whether 
+          the entry is obsolete.</td>
+    </tr>
+    <tr> 
+      <td width=183 valign=top> date_last_synchronized</td>
+      <td width=99 valign=top> date</td>
+      <td width=356 valign=top> date 
+          last synchronized with the tair database.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>term_annotation</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table stores the annotations; this is essentially a linking 
+    table between two terms. The subject term is usually the gene to be annotated 
+    and the object term is the controlled vocabulary term. The table also contains 
+    foreign keys to the evidence, reference, and relationship_type and other information 
+    relating to annotations.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=185 valign=top> <h1>Field name</h1></td>
+      <td width=99 valign=top> <b>Datatype</b></td>
+      <td width=355 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> term_annotation_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> primary 
+          key of this table.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> subject_term_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> a 
+          foreign key to the term table. the subject term usually denotes a term 
+          of type gene.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> object_term_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> a 
+          foreign key to the term table. The object term usually denotes a term 
+          of a controlled vocabulary types.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> relationship_type_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> foreign 
+          key to the relationship_type table. Currently defined values include 
+          'involved_in', 'expressed_in' etc. </td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> evidence_with</td>
+      <td width=99 valign=top> text</td>
+      <td width=355 valign=top> free 
+          text of what the evidence involved. Can be a locus name, an interpro 
+          domain etc.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> evidence_description</td>
+      <td width=99 valign=top> text</td>
+      <td width=355 valign=top> free 
+          text describing the evidence</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> <span style='font-family:Helvetica;background:yellow;'>entered_date</td>
+      <td width=99 valign=top> date</td>
+      <td width=355 valign=top> date 
+          the entity was initially entered into the database</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> entered_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_obsolete</td>
+      <td width=99 valign=top> enum('y','n')</td>
+      <td width=355 valign=top> obsoletion 
+          status</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> obsoleted_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> foreign 
+          key to the user table who obsoleted entity.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> is_temporary</td>
+      <td width=99 valign=top> enum('y','n')</td>
+      <td width=355 valign=top> denotes 
+          a temporary annotation (?)</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> evidence_type_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> type 
+          of evidence according to the GO evidence codes (IDA, IEA, IEP, IGI etc).</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> annotated_date</td>
+      <td width=99 valign=top> date</td>
+      <td width=355 valign=top> date 
+          the annotation was made.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> updated_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> foreign 
+          key to the user table denoting the user who made the most recent update.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_updated</td>
+      <td width=99 valign=top> date</td>
+      <td width=355 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> pub_reference_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=355 valign=top> foreign 
+          key to the pub_reference_id, which is the source of the evidence in 
+          the annotation.</td>
+    </tr>
+    <tr> 
+      <td width=185 valign=top> date_last_synchronized</td>
+      <td width=99 valign=top> date</td>
+      <td width=355 valign=top> used 
+          in PubToTair pipeline to synchronize the pub and TAIR databases.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>evidence_type</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This table stores different types of evidence used for annotations 
+    stored in term_annotation table. The types are consistent with what is being 
+    used by GO consortium.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=181 valign=top> <h1>Field name</h1></td>
+      <td width=120 valign=top> <b>Datatype</b></td>
+      <td width=336 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=181 valign=top> evidence_type_id</td>
+      <td width=120 valign=top> int(12)</td>
+      <td width=336 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=181 valign=top> evidence_code</td>
+      <td width=120 valign=top> varchar(5)</td>
+      <td width=336 valign=top> the 
+          evidence code abbreviation.</td>
+    </tr>
+    <tr> 
+      <td width=181 valign=top> evidence_long</td>
+      <td width=120 valign=top> varchar(250)</td>
+      <td width=336 valign=top> the 
+          evidence code abbreviation spelled out in full.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b>evidence_description</b>
+This table stores more detailed evidence information for each evidence 
+    type. This is a more granular evidence ontology than evidence type.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=186 valign=top> <h1>Field name</h1></td>
+      <td width=119 valign=top> <b>Datatype</b></td>
+      <td width=333 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> evidence_description_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> tair_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> evidence_description_id 
+          in TAIR db. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> evidence_type_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key into evidence_type for which this entry describes in more detail.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> description</td>
+      <td width=119 valign=top> varchar(255)</td>
+      <td width=333 valign=top> actual 
+          description.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_entered</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          the entity was initially entered into the database</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> entered_by</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_last_synchronized</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> used 
+          in PubToTair pipeline to synchronize the pub and TAIR databases.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_updated</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> is_obsolete</td>
+      <td width=119 valign=top> enum('y','n')</td>
+      <td width=333 valign=top> whether 
+          this entry is obsolete.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>relationship_type</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica;'>This table contains types of relationship
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=188 valign=top> <h1>Field name</h1></td>
+      <td width=119 valign=top> <b>Datatype</b></td>
+      <td width=331 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> relationship_type_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=331 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> tair_relationship_type_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=331 valign=top> relationship_type_id 
+          in TAIR db. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> evidence_type_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key into evidence_type for which this entry describes in more detail.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> category</td>
+      <td width=119 valign=top> varchar(20)</td>
+      <td width=331 valign=top> type 
+          of interactions the relationship type is being used (e.g. gene2gene, 
+          gene2term, etc.)</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> description</td>
+      <td width=119 valign=top> varchar(255)</td>
+      <td width=331 valign=top> actual 
+          description.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> long_description</td>
+      <td width=119 valign=top> varchar(255)</td>
+      <td width=331 valign=top> more 
+          detailed description of the relationship_type</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> date_entered</td>
+      <td width=119 valign=top> date</td>
+      <td width=331 valign=top> date 
+          the entity was initially entered into the database</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> entered_by</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> date_last_synchronized</td>
+      <td width=119 valign=top> date</td>
+      <td width=331 valign=top> used 
+          in PubToTair pipeline to synchronize the pub and TAIR databases.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> date_updated</td>
+      <td width=119 valign=top> date</td>
+      <td width=331 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> updated_by</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=331 valign=top> foreign 
+          key to the user table denoting the user who made the most recent update.</td>
+    </tr>
+    <tr> 
+      <td width=188 valign=top> is_obsolete</td>
+      <td width=119 valign=top> enum('y','n')</td>
+      <td width=331 valign=top> whether 
+          this entry is obsolete.</td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b>comment</b>
+ This table contains comments that can be associated to any other table 
+    in the database.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=186 valign=top> <h1>Field name</h1></td>
+      <td width=119 valign=top> <b>Datatype</b></td>
+      <td width=333 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> comment_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> comment_type</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> type 
+          of the comment. Not sure what this 
+          is used for?</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> table_name</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> name 
+          of the table for which the comment describes.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top>table_row_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> entry 
+          of the table for which the comment describes.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_entered</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          the entity was initially entered into the database</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> entered_by</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key to user table (user_id) for the user that entered the data.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_updated</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> is_obsolete</td>
+      <td width=119 valign=top> enum('y','n')</td>
+      <td width=333 valign=top> whether 
+          this entry is obsolete.</td>
+    </tr>
+  </table>
+<P><b>annotation_task</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=186 valign=top> <h1>Field name</h1></td>
+      <td width=119 valign=top> <b>Datatype</b></td>
+      <td width=333 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> annotation_task_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> term_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key to the term table for which this task is assigned.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> assigned_to</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key to user table for whom this task is assigned.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> status</td>
+      <td width=119 valign=top> varchar(80)</td>
+      <td width=333 valign=top> status 
+          of the task.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_entered</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          the entity was initially entered into the database</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_updated</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> is_closed</td>
+      <td width=119 valign=top> enum('y','n')</td>
+      <td width=333 valign=top> whether 
+          the task has been close. Not sure what this means?</td>
+    </tr>
+  </table>
+<P><b>>user</b>
+This table stores information about registered users of the database.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=151 valign=top> <h1>Field name</h1></td>
+      <td width=102 valign=top> <b>Datatype</b></td>
+      <td width=384 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> user_id</td>
+      <td width=102 valign=top> <span style='font-family:Helvetica;background:yellow;'>int(11)</td>
+      <td width=384 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> community_id</td>
+      <td width=102 valign=top> int(12)                                   
+          </td>
+      <td width=384 valign=top> community_id 
+          in TAIR db. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> can_login</td>
+      <td width=102 valign=top> enum('y','n')                         
+          </td>
+      <td width=384 valign=top> whether 
+          the user can login. Not sure what this is used for?</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> passwd</td>
+      <td width=102 valign=top> varchar(20)    
+          </td>
+      <td width=384 valign=top> stores 
+          password for the user</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> initials</td>
+      <td width=102 valign=top> char(3)        
+          </td>
+      <td width=384 valign=top> initials 
+          of the user</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> fullname</td>
+      <td width=102 valign=top> varchar(80)    
+          </td>
+      <td width=384 valign=top> fullname 
+          of the user</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> name</td>
+      <td width=102 valign=top> varchar(20)                                       
+          </td>
+      <td width=384 valign=top> user 
+          name for the user</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> auto_annotate</td>
+      <td width=102 valign=top> enum('y','n')                                 
+          </td>
+      <td width=384 valign=top> whether 
+          this user gets assignments from the annotation tasks.</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> email</td>
+      <td width=102 valign=top> varchar(80)    
+          </td>
+      <td width=384 valign=top> email 
+          address of the user</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> is_editor</td>
+      <td width=102 valign=top> enum('y','n')  
+          </td>
+      <td width=384 valign=top> whether 
+          the user is an editor. <span style='background:yellow;
+  '>Not sure what this is used for?</td>
+    </tr>
+    <tr> 
+      <td width=151 valign=top> can_access_pdfs</td>
+      <td width=102 valign=top> enum('y','n')                     
+          </td>
+      <td width=384 valign=top> whether 
+          this user can access the pdfs.</td>
+    </tr>
+  </table>
+<P><b>update_history</b>
+This is a new table that is under construction. It will store different 
+    type of updates done to data entries, particularly the many-to-many obsolete=replaced 
+    by relationships. Currently it is handled as one replaced by to many obsoleted, 
+    which is not accurate.
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=186 valign=top> <h1>Field name</h1></td>
+      <td width=119 valign=top> <b>Datatype</b></td>
+      <td width=333 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> update_history_id</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> the 
+          primary key of this table</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> table_name</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> evidence_description_id 
+          in TAIR db. This field needs to be made generic.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> table_id_1</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key into evidence_type for which this entry describes in more detail.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> table_id_2</td>
+      <td width=119 valign=top> varchar(255)</td>
+      <td width=333 valign=top> actual 
+          description.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> type</td>
+      <td width=119 valign=top bgcolor="yellow">&nbsp; </td>
+      <td width=333 valign=top bgcolor="yellow">&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> comment</td>
+      <td width=119 valign=top bgcolor="yellow">&nbsp; </td>
+      <td width=333 valign=top bgcolor="yellow">&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> old_value</td>
+      <td width=119 valign=top bgcolor="yellow">&nbsp; </td>
+      <td width=333 valign=top bgcolor="yellow">&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> new_value</td>
+      <td width=119 valign=top bgcolor="yellow">&nbsp; </td>
+      <td width=333 valign=top bgcolor="yellow">&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_last_synchronized</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> used 
+          in PubToTair pipeline to synchronize the pub and TAIR databases.</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> date_updated</td>
+      <td width=119 valign=top> date</td>
+      <td width=333 valign=top> date 
+          last modified</td>
+    </tr>
+    <tr> 
+      <td width=186 valign=top> updated_by</td>
+      <td width=119 valign=top> int(12)</td>
+      <td width=333 valign=top> foreign 
+          key to the user table denoting the user who made the most recent update.</td>
+    </tr>
+  </table>
+<b>pub_allele</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=179 valign=top> <h1>Field name</h1></td>
+      <td width=110 valign=top> <b>Datatype</b></td>
+      <td width=349 colspan=2 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> pub_allele_id</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> tair_poly_id</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> pub_gene_id</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> name</td>
+      <td width=110 valign=top> varchar(20)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> type</td>
+      <td width=110 valign=top> varchar(20)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> inheritance</td>
+      <td width=110 valign=top> varchar(50)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> polymorphic_sequence</td>
+      <td width=110 valign=top> varchar(50)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> insertion_type</td>
+      <td width=110 valign=top> varchar(50)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> construct_type</td>
+      <td width=110 valign=top> varchar(50)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> tair_clone_id</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> allele_mode</td>
+      <td width=110 valign=top> varchar(100)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> mutation_site</td>
+      <td width=110 valign=top> varchar(30)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> mutagen</td>
+      <td width=110 valign=top> varchar(255)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> tair_genetic_marker_id</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> date_updated</td>
+      <td width=110 valign=top> date</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> updated_by</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> date_entered</td>
+      <td width=110 valign=top> date</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> entered_by</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> is_obsolete</td>
+      <td width=110 valign=top> enum('y','n')</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=179 valign=top> replaced_by</td>
+      <td width=110 valign=top> int(12)</td>
+      <td width=348 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_gene_pub_allele</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=143 valign=top> <h1>Field name</h1></td>
+      <td width=99 valign=top> <b>Datatype</b></td>
+      <td width=397 colspan=2 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> pub_gene_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> pub_allele_id</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> relationship_type</td>
+      <td width=99 valign=top> varchar(20)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> gene_feature_site</td>
+      <td width=99 valign=top> varchar(30)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> date_updated</td>
+      <td width=99 valign=top> date</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> updated_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> date_entered</td>
+      <td width=99 valign=top> date</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> entered_by</td>
+      <td width=99 valign=top> int(12)</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=143 valign=top> is_obsolete</td>
+      <td width=99 valign=top> enum('y','n')</td>
+      <td width=396 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>pub_phenotype</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=146 valign=top> <h1>Field name</h1></td>
+      <td width=105 valign=top> <b>Datatype</b></td>
+      <td width=387 colspan=2 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> pub_phenotype_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> tair_phenotype_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> phenotype</td>
+      <td width=105 valign=top> varchar(255)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> phenotype_text</td>
+      <td width=105 valign=top> text</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> article_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> community_id</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> date_updated</td>
+      <td width=105 valign=top> date</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> updated_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> date_entered</td>
+      <td width=105 valign=top> date</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> entered_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> is_obsolete</td>
+      <td width=105 valign=top> enum('y','n')</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=146 valign=top> replaced_by</td>
+      <td width=105 valign=top> int(12)</td>
+      <td width=386 valign=top>&nbsp; </td>
+      <td
+  width=1>&nbsp; </td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>reference</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=103 valign=top> <h1>Field name</h1></td>
+      <td width=96 valign=top> <b>Datatype</b></td>
+      <td width=438 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=103 valign=top> reference_id</td>
+      <td width=96 valign=top> int(12)</td>
+      <td width=438 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=103 valign=top> type</td>
+      <td width=96 valign=top> varchar(30)</td>
+      <td width=438 valign=top>&nbsp; </td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>reference2reference</b>
+  <table border=1 cellspacing=0 cellpadding=0>
+    <tr> 
+      <td width=199 valign=top> <h1>Field name</h1></td>
+      <td width=85 valign=top> <b>Datatype</b></td>
+      <td width=353 valign=top> <b>Definition</b></td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> id</td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> subject_pub_reference_id</td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> object_pub_reference_id</td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> relationship_type_id</td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> date_entered</td>
+      <td width=85 valign=top> date</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> entered_by 
+          </td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> date_updated</td>
+      <td width=85 valign=top> date</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+    <tr> 
+      <td width=199 valign=top> updated_by</td>
+      <td width=85 valign=top> int(12)</td>
+      <td width=353 valign=top>&nbsp; </td>
+    </tr>
+  </table>
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>word</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table is deprecated.
+  <p style='
+text-autospace:none'><b><span style='font-family:
+Helvetica-Bold;'>word_index</b>
+  <p style='
+text-autospace:none'><span style='font-family:
+Helvetica-Oblique;'>This table is deprecated.
+</div>
+</body>
+</html>

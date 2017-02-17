@@ -1,0 +1,251 @@
+<html><head><title>Quality Control Guide</title></head>
+<BR>
+<body bgcolor="#FfFfFF">
+<CENTER><H2>Quality Control Guide </H2></CENTER>
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+
+<BR><BR>    
+These are the checks that should be run periodically (once a month) to ascertain annotation consistency.  
+<OL>
+<LI>Use the pre-fabricated SQL statements for each instance to query Pub (use mysql4).
+<LI>Determine the subject_term_id of the affected annotation(s).  
+<LI>For the SQL statements that do not directly give you the subject_term_id, modify the existing SQL to do this, once you have determined that there are annotations that need to be fixed.
+<LI>Paste the subject_term_id into the following base URL: <BR>
+
+<B>http://tesuque.stanford.edu:8080/pub/DisplayAnnotation?term_id=xxxxx</B> <BR>
+where xxxxx = subject_term_id
+<LI>Update the annotation to match the desired correct format.
+<LI>Notify the curator/s who made the errors, if necessary.
+</OL>
+
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+<OL>
+<B>Date last cleaned up: 20 June 2007 </B>
+<LI><A HREF ="#NAS">Annotations using meeting abstracts</A> 
+<LI><A HREF ="#anat">Annotations to anatomy/development terms</A>
+<LI><A HREF="#activity">Annotations to terms containing 'activity'</A>(1 remaining annotation has 'functions as' but this is 'xxx transporter,xxxxxx activity', subject_term_id = 107966)
+<LI><A HREF="#binding">Annotations to terms containing 'binding'</A>
+<LI><A HREF="#structural">Annotations to terms starting with 'structural constituent'</A>
+<LI><A HREF="#root">Annotations to root terms</A>
+<LI><A HREF="#functions">Annotations using relationship type like 'functions%'</A>
+<LI><A HREF="#temp">Temporary annotations to legitimate terms</A>
+<LI><A HREF="#obsolete">Annotations to obsolete terms</A>
+<LI><A HREF="#mismatch">Non-matching relationship type/term.type</A>(c.needs to be examined more closely) 
+<LI><A HREF="#ND">Non-matching evidence type, term.type</A>
+<LI><A HREF="#dupes">Duplicate check</A>
+<LI><A HREF="#mutant">"inferred from mutant phenotype"</A>  Date last cleaned up: 04-21-04 no need to check anymore
+</OL>
+
+<BR>
+<BR>
+
+
+<p>
+
+<CENTER><A NAME="NAS"><B>Annotations using meeting abstracts</B></a><BR></CENTER>
+<BR>
+
+<UL>
+Annotations made based on meeting abstracts should ONLY use the evidence code NAS (evidence_type_id = 8).  Note that some meeting abstracts may be disguised as part of a journal, but flagged as 'supplement'.  <BR></BR>
+
+<B>SQL statement:<BR></B>
+mysql> select subject_term_id, object_term_id from pub_termannotation ta, pub_article a, pub_reference r, pub_user u where ta.entered_by = u.id and ta.evidence_type_id != 8 and ta.pub_reference_id = r.id and r.table_name = 'pub_article' and r.table_id = a.id and a.type = 'abstract' and ta.entered_by !=10 and ta.is_obsolete = 'n';
+
+</UL>
+
+<CENTER><A NAME = "anat"><B>Annotations to anatomy/development terms</B></A></CENTER>
+<BR>
+
+<OL>
+<LI>Annotations made to anatomy and development terms should have one of these relationship types
+  <UL>
+  <LI> expressed in
+  <LI> expressed during
+  <LI> expressed only in
+  <LI> expressed only during
+  <LI> located in
+  <LI> not located in
+  </UL>
+<BR>
+  <B>SQL statement:<BR></B>
+
+  mysql> select ta.subject_term_id, r.description, t.name, u.name, ta.entered_date from pub_termannotation ta, pub_term t, pub_user u, pub_relationshiptype r where ta.relationship_type_id = r.id and ta.entered_by = u.id and ta.object_term_id = t.id and t.type in ('grow', 'stru') and ta.evidence_type_id in (1,3,8,10) and ta.is_obsolete = 'n' and (r.description not like '%expressed%' and r.description not like '%located%');
+
+<BR><BR>
+
+<LI>Annotations should only have the following evidence types: IDA, IEP, NAS, TAS<BR>
+<BR>
+<B>SQL statement:<BR></B>
+
+select subject_term_id, t.name, ta.evidence_description from pub_termannotation ta, pub_term t, pub_user u where ta.entered_by = u.id and ta.object_term_id = t.id and t.type in ('grow', 'stru') and ta.relationship_type_id = 4 and ta.evidence_type_id not in (1,3,8,10) and ta.is_obsolete = 'n';
+
+</OL>
+
+<CENTER><A NAME="activity"><B>Annotations to terms containing 'activity'</B></a><BR></CENTER>
+<BR>
+
+NOTE: Ignore the ones where the relationship type = none. These are TIGR annotations that were transferred to the current gene model upon merging of non .1 AGI gene models.  These will get cleaned up in bulk later.
+
+<UL>
+Annotations made to terms containing the word 'activity' should have relationship types of either 'has' or 'does not have'.  The annotation may use the relationship type 'contributes to' if there is another annotation of the same gene to a cellular component term (is subunit of).<BR></BR>
+
+<B>SQL statement:<BR></B>
+mysql> select r.description, count(*) from pub_termannotation ta, pub_relationshiptype r, pub_term t where ta.object_term_id = t.id and ta.relationship_type_id = r.id and t.type = 'func' and t.name like '%activity%' and ta.is_obsolete = 'n' and ta.entered_by != 10 group by r.description;
+</UL>
+
+<CENTER><A NAME="binding"><B>Annotations to terms containing 'binding'</B></a><BR></CENTER>
+<BR>
+
+<UL>
+Annotations made to terms containing the word 'binding' should have relationship type like '%functions in'.<BR></BR>
+
+<B>SQL statement:<BR></B>
+mysql> select r.description, count(*) from pub_termannotation ta, pub_relationshiptype r, pub_term t where ta.object_term_id = t.id and ta.relationship_type_id = r.id and t.type = 'func' and t.name like '%binding%' and ta.is_obsolete = 'n' and ta.entered_by != 10 group by r.description; 
+
+</UL>
+
+<CENTER><A NAME="structural"><B>Annotations to terms starting with 'structural constituent'</B></a><BR></CENTER>
+<BR>
+
+<UL>
+Annotations made to terms starting with the words 'structural constituent' should have relationship type = 'functions as'.  The relationship type 'does not function as' does not yet exist.<BR></BR>
+
+<B>SQL statement:<BR></B>
+mysql> select r.description, count(*) from pub_termannotation ta, pub_relationshiptype r, pub_term t where ta.object_term_id = t.id and ta.relationship_type_id = r.id and t.type = 'func' and t.name like 'structural constituent%' and ta.is_obsolete = 'n' and ta.entered_by != 10 group by r.description; 
+
+</UL>
+
+
+<CENTER><A NAME="root"><B>Annotations to root terms</B></a><BR></CENTER>
+<BR>
+
+<UL>
+Annotations made to the root terms (molecular_function, biological_process, cellular_component) should have evidence code= 'ND'. When running the INTERPRO to GO mapping script, some annotations are generated to 'molecular function unknown' with an IEA evidence code.(need to check this 10-30-06) These need to be set to obsolete after each analysis run.  TIGR annotations to the unknown terms also use the codes IC, ISS, NAS and TAS.  <BR>
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql>select evidence_code,count(*) from pub_termannotation ta, pub_evidencetype e where ta.evidence_type_id = e.id and is_obsolete = 'n' and ta.evidence_type_id != 9 and object_term_id in (5534,453,3519) and ta.entered_by != 10 group by 1; 
+</UL>
+
+<CENTER><A NAME="functions"><B>Annotations with relationship type like 'functions%'</B></a><BR></CENTER>
+<BR>
+
+<UL>
+Annotations made using the relationship types 'functions in' and 'functions as' should be made to molecular function terms ONLY.  <BR>
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql>select ta.subject_term_id, r.description, t.name, t.type from pub_user u, pub_termannotation ta, pub_relationshiptype r, pub_term t where ta.relationship_type_id = r.id and ta.object_term_id = t.id and t.type != 'func' and r.description like 'functions%' and ta.is_obsolete = 'n' and ta.entered_by = u.id order by ta.subject_term_id;
+</UL>
+
+<BR>
+<CENTER><A NAME="temp"><B>Temporary annotations to legitimate terms</B></a><BR></CENTER>
+<BR>
+
+<UL>
+There should be no temporary annotations to non-temporary terms with external ids. <BR>
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql> select subject_term_id,object_term_id, t.name, t.id, t.go_external_id from pub_termannotation ta, pub_term t where ta.object_term_id = t.id and t.is_temporary = 'n' and ta.is_temporary = 'y' and (t.go_external_id is not null and t.go_external_id != '') and ta.is_obsolete = 'n';
+</UL>
+<BR>
+<BR>
+<CENTER><A NAME="obsolete"><B>Annotations to obsolete terms</B></a><BR></CENTER>
+<BR>
+
+<UL>
+
+There should be no annotations to terms that are children of an obsolete node. <BR>
+
+<BR>
+     <UL>
+     <LI> Using the TAIR Keyword Browser, search for terms than 'starts with' 'obsolete'. 
+     <LI> You will get a result page with a list of the terms and their associated annotations.  
+     <LI> Click on the link to the annotations.  You will then see a list of the genes and the obsolete terms they are annotated to.
+     <LI> Go to Pub and update the annotation to a more appropriate term or obsolete the annotation if this is the appropriate course of action.
+     <LI> You can see recommended alternative GO terms from the term detail page.  Just type in the name of the obsolete term in the term search and link to the detail page.  See the Public Comment section.
+     </UL>
+
+</UL>
+<BR>
+<BR>
+<CENTER><A NAME="mismatch"><B>Non-matching relationship type/term.type</B></a><BR></CENTER>
+
+<UL>Relationship type 'has' goes with function terms only.<BR>
+<B>SQL statement:</B><BR>
+mysql> select subject_term_id, t.name, t.type from pub_termannotation ta, pub_relationshiptype r, pub_term t where ta.relationship_type_id = r.id and ta.object_term_id = t.id and ta.is_obsolete = 'n' and ta.relationship_type_id = 44 and t.type != 'func';
+</UL>
+
+<UL>Relationship type '%involved in' goes with process terms only <BR>
+<B>SQL statement:</B> <BR>
+mysql>select count(*) from pub_termannotation ta, pub_term t, pub_relationshiptype r where ta.object_term_id = t.id and t.type != 'proc' and ta.relationship_type_id = r.id and r.description like '%involved in' and ta.is_obsolete = 'n';
+</UL>
+
+<UL> Check relationship types for process annotations <BR>
+<B>SQL statement</B> <BR>
+mysql> select r.description,count(*) from pub_termannotation ta, pub_term t, pub_relationshiptype r where ta.object_term_id = t.id and t.type = 'proc' and ta.relationship_type_id = r.id and ta.is_obsolete = 'n' group by r.description;
+</UL>
+<UL> Check relationship types for component annotations <BR>
+<B>SQL statement</B> <BR>
+mysql>select r.description,count(*) from pub_termannotation ta, pub_term t, pub_relationshiptype r where ta.object_term_id = t.id and t.type = 'comp' and ta.relationship_type_id = r.id and ta.is_obsolete = 'n' group by r.description;
+</UL>
+
+<BR>
+<BR>
+<CENTER><A NAME="ND"><B>Non-matching evidence type, term.type</B></a><BR></CENTER>
+<BR>
+
+<UL>
+
+Evidence type = ND (9) should only be used with the root terms.<BR>
+
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql> select subject_term_id, t.name from pub_termannotation ta, pub_term t where ta.object_term_id = t.id and evidence_type_id = 9 and t.name not in ("molecular_function","biological_process","cellular_component") and ta.is_obsolete = 'n';
+</UL>
+<BR>
+<BR>
+
+<CENTER><A NAME="dupes"><B>Duplicate check</B></a><BR></CENTER>
+<BR>
+
+<UL>
+
+Checks for identical gene, term, obsolete status, evidence_with, evidence code and evidence description.<BR>
+
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql> select subject_term_id, object_term_id, pub_reference_id, is_obsolete, evidence_description, evidence_with, evidence_type_id, count(*) from pub_termannotation whe
+re is_obsolete = 'n' group by subject_term_id, object_term_id, pub_reference_id, is_obsolete, evidence_description, evidence_with, evidence_type_id  having count(*) > 1;
+</UL>
+<BR>
+<BR>
+
+<CENTER><A NAME="mutant"><B>"inferred from mutant phenotype"</B></a><BR></CENTER>
+<BR>
+
+<UL>
+
+There should be no valid annotations that use the evidence_description 'inferred from mutant phenotype.' NOTE: On April 21, 2004, I obsoleted the description 'analysis of mutant phenotype.' We should never see this used again as it no longer appears on the web interface. TB<BR>
+
+
+<BR>
+<B>SQL statement:<BR></B>
+mysql> select subject_term_id, u.name, entered_date from pub_termannotation ta, pub_user u where ta.entered_by = u\
+.id and ta.is_obsolete = 'n' and evidence_description = 'analysis of mutant phenotype' order by subject_term_id;
+</UL>
+<BR>
+
+<center><I>Last modified by Tanya Berardini 20 June 2007<BR>
+Questions? Comments? Suggestions? <A href="mailto:tberardi@acoma.stanford.edu">Email Tanya. </A> </I></center>
+</blockquote>
+</body></html>

@@ -1,0 +1,332 @@
+<html><head><title>TAIR Literature Curation Database Guide</title></head>
+<BR>
+<body bgcolor="#FfFfFF">
+<CENTER><H2> TAIR Literature Curation Database (Pub) Guide </H2></CENTER>
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+<TD><CENTER>
+<A HREF="#login">TESTINGLogging in</A> | 
+<A HREF="#search">TANYA IS TYPING HERESearching the database</A> | 
+<A HREF="#genes">Updating Pub Gene Information</A> |
+<A HREF="#hits">Updating/validating hits</A> |<br>
+<A HREF="#articles">Updating articles</A> |
+<A HREF="#merging">Dealing with and Merging Symbolic Gene Models</A> |
+<A HREF="#info">Strategies for Finding Information Outside of Pub</A>| <br>
+<A HREF="#papers">Paper Curation Guidelines</A>
+</CENTER></TD>
+
+<BR><BR>    
+<UL> Welcome to the curation guide. This document and the pages that are linked to it are meant to provide an introduction to the biologist who wants to use PubSearch for literature curation.  Note: some of the guidelines refer to 'dropping genes.'  This refers to our gene-by-gene approach for curation.  Please email your comments/questions to <a href="mailto:curator@acoma.stanford.edu">curator@acoma </a>. 
+
+<BR><BR>
+
+<B>Further reading:</B> <BR>
+<UL>
+<LI> <A href="GO_help.html">GO Curation and Annotation Guide</A>
+<LI> <A href="AGP_help.html">Allele, Phenotype, Germplasm Annotation Guide</A>
+<LI> <A href="PubGO_help.html">How to do Controlled Vocabulary Annotation in PubSearch</A>
+</UL>
+<BR><BR>
+<p>
+<A NAME="login"><B>Logging into the database</B></a><p>
+<UL>
+<LI>Users can login to the database from the <a href=" http://tesuque.stanford.edu:8080/pub/index.jsp">entry page</a> and also from the search page that is linked from the entry page. You can also login from the result pages. If you are not logged in you cannot update/insert data.
+</UL>
+
+<p>
+
+<A NAME="search"><B>Searching the database</B></a><p>
+<UL>
+<LI>You do not need to be logged in to search the database. From the header that is on each page in PubSearch, you can select the specific type of data that you would like to search for.  Just click on the desired type and you will be taken to the relevant search page.
+<LI><B>Article Searching</B>.From the Article search page, Simple section, you can search for terms in the FULL TEXT of the article.  Using the Details section,  you can search for articles by author name (s), journal name, title and/or abstract, publication type, year, volume and page start.
+<LI><B>Term Searching</B>. From the Term search page, you can find terms by name, id,  type, temporary status and obsolete status. 
+<LI><B>Gene Searching</B> From the Gene search page, you can use parameters like name, id, locus name and summary  as well as temporary and obsolete status to find genes of interest. 
+<LI><B>Hit Searching</B> Use this search to find papers that are associated to a gene (or other term) of interest.  You can restrict the articles that are searched as well. A very useful option here is the ability to select hits based on their validation status.
+</UL>
+
+<p>
+
+<A NAME="genes"><B>Updating Pub Gene Information</B></a><p>
+<UL>
+<LI><B>Search for all similarly named genes</B>
+<UL><LI>Input the core name (RPL for RPL9 or ATRPL9) and search for genes containing these letters.  This will bring up possible aliases needing merging and other genes (related or not) sharing the same name.   This is necessary information for validating hits.
+</UL>
+<LI><B>Validate hits</B>
+<UL><LI>See <A HREF="#hits">Updating/Validating hits</A> below for details.  If the hits don't provide enough information, see <A HREF="#info">Strategies for Finding Information Outside of Pub</A> below.  If you tried at least some of these search strategies and could not find enough information to add even one GO annotation, you can drop the gene or continue trying to find information.  If you've tried pretty much everything with no success, annotate it to "unknown".
+<LI>If you find a paper discussing the gene that is not currently a hit, add it using the "Add Article ID as Hit" box.  If the article is not yet in Pub, add it using the "AddArticle" link (see <A HREF="#articles">Updating Articles</A> below for more information).
+<LI>If all the information you have for the gene comes from a <B> meeting abstract</B>, drop the gene for now and proceed to annotating/updating genes which have actual published references.  We will return to these dropped genes after we are done with them. We discussed obsoleting the genes if there has been nothing but a meeting abstract as a reference for it over a time span of 5 years.(03/06/03)
+</UL>
+<LI><B>Add gene alias</B>
+<UL><LI>Obsolete gene models that are aliases and replace by the gene model with the most used or widely accepted name, including the other names as aliases.
+<LI> What to do when encountering an AT% name where AT stands for Arabidopsis thaliana.
+(1) If the gene is referred to only as ATXXX in the literature, keep ATXXX
+as the primary name and do NOT add XXX as an alias.
+(2) If the gene is referred to as BOTH ATXXX and XXX in the literature,
+keep XXX as the primary name and add ATXXX as an alias.
+</UL>
+<LI><B>Add sequences if missing</B>
+<UL><LI>Search for sequence in publications and GenBank (try searching for "accession" in the pdf-NOTE:the search function for Acrobat does not work in Firefox, use Explorer instead). Try to add the original cDNA clone if you can find it in the cloning paper.  Whenever you add a genomic or cDNA clone, please also add the GenBank accession and GI numbers of the associated protein record.  Do NOT add the .1 extension of the GenBank ID.
+<LI><U>Origin</U>:  means the biological material used for the library or PCR
+template.  All TIGR sequences (sequence_class CDS, cDNA or genomic) are
+origin = genomic.  GenBank sequences are origin mRNA if the top line of
+the GenBank record says mRNA, genomic if it says genomic.  tRNA, rRNA and
+other RNA sequences should be origin = mRNA if the starting material for
+sequencing was RNA (think cDNA).
+
+<LI><U>Sequence class</U>:  CDS is a sequence without UTRs or introns (mostly TIGR
+sequences). cDNA includes UTRs but not introns (most GenBank mRNA
+records).  Genomic includes both UTRs and introns (most GenBank genomic
+records).  Others are self explanatory.
+
+<LI><U>Sequence is full length</U>:  Set this to true or false only for single gene
+sequences (sequence_class = cDNA or sequence_class = genomic but it is a
+single gene sequence).  For all other cases (BACs, cosmids, etc) leave it
+as unknown.
+
+<LI><U>Sequence</U>:  Do not fill in for GenBank records(Dan will do this with his GenBank parsing
+script).  For user submission, please fill this in.
+
+<LI><U>DB name, DB accession, GenBank GI</U>: fill in for database entries, for user submissions, use DB name = other and leave the other fields blank
+
+<LI><U>Definition</U>:  Don't fill in for now.
+
+<LI><U>Community ID</U>: fill in if sequence is a user submission or if you are highly motivated when doing GenBank records.
+
+<LI><U>Organization</U>: Don't fill in.
+
+<LI><U>Species Variant</U>: fill in: Species Variant IDs: 89= Columbia, 217 = Landsberg erecta, 382 = Ws.
+
+</UL>
+<LI><B>Trans-spliced genes </B>
+<UL>
+<LI> There are four trans-spliced genes in the organellar genomes: nad5, nad2, and nad1 in the mitochondrial genome and rps12 in the chloroplast genome.  Each individually transcribed region of the genome was given a separate locus and gene model (for example, nad1 is transcribed in two parts, nad1a and nad1b, which are then trans-spliced together to make a final transcript).  Each gene model is associated to its own unique genomic sequence.  However, all gene models belonging to one of these sets is associated to a SINGLE common cds and a SINGLE common protein sequence to indicate the trans-splicing that occurs.  Comments to that effect are made in the gene description of each of the gene models. Also,as the individual gene models are named nad5A, nad5B, nad5C, an alias of nad5 (and similar aliases for the others) were added to all of the gene models.
+</UL>
+
+<LI><B>Add locus link if missing</B>
+
+<UL><LI><A HREF="http://www.arabidopsis.org/wublast/index2.jsp">Blast</A> the nucleotide sequence against CDS from AGI (if it's an mRNA) or Genes from AGI (if it's a genomic sequence) from AGI, with filtering turned off.  A few nucleotide mismatches per gene are acceptable (can be caused by sequencing errors or ecotype variation).
+<LI>If there is no good match, blast against the TIGR AGI BAC set to see if there is a match not annotated as a gene. If a good partial match exists (part of the query matches nothing and part matches a TIGR gene) it's OK to annotate to that locus. If you're in doubt whether a partial match is correct, blast against the AGI BAC set to make sure there is no better, unannotated match elsewhere in the genome.
+<LI>If you are making a link to a genetically mapped locus obsolete and replacing it with a link to an AGI locus, please also click on the locus link and update the genetically mapped locus.  In the Locus detail page, set is_obsolete to 'true' and fill in the replaced_by field with the pub_locus_id of the AGI locus that replaces it.
+</UL>
+<LI><B>Click on locus link to view all GO annotations for that locus</B>
+<UL><LI>Drop the gene to avoid duplicating effort if the locus already has non-IEA annotations to all 3 GO categories, unless you are already aware of a better GO term or better evidence for an annotation.
+</UL>
+<LI><B>Add GO annotations</B>
+<UL><LI>See <A HREF="GO_help.html">GO annotation guide</A> for details.
+</UL>
+<LI><B>Add or revise gene summary</B>
+<UL><LI>By now you know a lot about this gene, so please summarize the main points for the gene summary field. The salient points are given below.  The description field is populated with computationally derived information and is not editable.
+<LI>Name of the gene product, its function, if known.
+<LI>Known or predicted biological role(s).
+<LI>Expression and/or localization.  Include any necessary conditional statements.
+<LI>Known phenotypes.  Only add phenotypes if this adds new information. For example, if there is no other information on this gene other than its mutant phenotype, add this information.  If there is a ton of biological process data and the phenotype still adds more information then add it. Otherwise, dispense with adding this.
+<LI>Membership in gene family
+<LI>Information on splice variant only if different biological roles have been shown for the variants.
+</UL>
+</UL>
+
+<p>
+
+<A NAME="hits"><B>Updating/Validating term associations to articles</B></a><p>
+<UL>
+<LI><B>Updating Hits</B>. You must be logged in as a user to validate matches.
+<UL>
+<LI>Click on the 'Validate Hits' link in the Gene detail page.
+<LI>Read the title and abstract (if available) of the paper and determine if
+the paper refers to the gene in question (see below for more on this). If the paper is valid, select the yes option. If the match is not valid, select no. If you are unsure, or there is not enough information in the title/abstract, select maybe. All articles are linked to their respective entries in Pub (linked from the title) and TAIR (linked from the TAIR accession id). You can follow the link to the detail page for the article and if the paper is locally online it will be linked from the detail page.
+<LI>Comments can be added by selecting the add comment link from the Valid? column. For example adding comments such as homologous gene, gene family information, genetic interactions, mutant phenotype may help in further clarifying the type of information contained in the paper. Eventually, we may develop a controlled vocabulary to concisely describe the relationship of  the term to the paper.
+<LI>When you are done validating all of the matches, click on the update button at the bottom of the page. Once you have updated, you will see a new screen that shows the results.
+</UL>
+<OL>
+<B>Based on a curator meeting on 3/25/04, the following was decided with respect to hit validation:</B>
+<LI>We will classify hits as to whether they are
+        <OL> 
+        <LI TYPE ="a">specifically about the gene in question <BR>
+                 -This includes papers about this gene when it is expressed in a heterologous species.
+        <LI TYPE ="a">not specifically about the gene in question but relevant to it<BR>
+                -This includes papers about a gene family (within
+                Arabidopsis or spanning several organisms) that this gene belongs to.<BR>
+                -This includes papers about a homolog of this particular
+                in another organism.
+         </OL>
+<LI>We will insert a new field in Pub (and a corresponding one in TAIR)
+that will cover hit.type.  The types for now will be 'specific' and
+'related'.
+<LI>We will have an updated interface for hit validation that will have the
+options:<BR>
+
+        [ ] valid-specific<BR>
+        [ ] valid-related<BR>
+        [ ] no<BR>
+        [ ] maybe<BR>
+        [ ] unverified<BR>
+<LI>Until the new field is added and the interface update completed, we
+will keep track of hit type this way:
+        <OL> 
+        <LI TYPE="a"> If the hit is valid and belongs to class (a) above, select
+        'valid'.
+        <LI TYPE="a"> If the hit is valid and belongs to class (b) above, select
+        'valid' AND type the word 'related' in the comment field.
+        </OL>
+</OL><p>  
+<LI><B>Some examples of what constitutes a valid match to a gene</B>.  We are being broad in terms of what is considered a match because from the perspective of a user wanting to search for papers about a gene it is often useful to obtain information about related genes.
+<UL>
+<LI>The main topic of the paper is the matched gene.  
+<LI>The paper is not specifically about the  Arabidopsis gene but describes a homolog from another organism.
+Validate and add comment such as 'Rice homolog'. 
+<LI>The main subject of the paper is not the matched gene but the matched gene is described as part of a genetic assay (e.g. double mutant) or other assay (e.g. DNA binding assay). Validate and add comment such as genetic interactions, protein interactions.
+<LI> The matched gene is used as a part of  a transgene construct (e.g. reported gene, promoter::GUS fusion that is used in an assay described in the paper.
+<LI> The paper describes a paralogous gene.
+</UL>
+<BR>
+<LI><B>Examples of what is not a valid match</B>.
+<UL>
+<LI> A paper that describes a gene with the same name, from a different organism but that gene is NOT a homolog of the Arabidopsis gene.
+<LI>A paper that describes a gene having the same symbolic name but clearly
+refers to a different gene (based on the description we have in TAIR).
+<LI>A paper where the term match refers to a different object (not a
+gene).e.g. A paper describing AG splice recognition sequences that was
+found by searching for the gene AG. Or a paper that describes the AP2
+domain but does not discuss the AP2 gene.
+</UL>
+</UL>
+
+<p>
+
+<A NAME="articles"><B>Updating articles</B></a><p>
+<UL>
+<LI> Is local online means that the paper has been downloaded or scanned in at TAIR and is available as PDF file linked from the detail page for the article. Local hardcopy papers are reprints or photocopies that are available at TAIR.
+<LI> Papers that need to be obsoleted (e.g. duplicates) should be made obsolete and the replaced_by field be filled in with the REFERENCE_ID of the paper that is the correct, most up-to-date reference. Other fields can be updated manually, such as type, page start etc...
+<LI> Use the Add Article function in Pub to insert new articles.  If you know the Pubmed ID, this can be parsed automatically.
+<LI> How to add a full-text pdf for an article:
+<UL>
+<LI>1. save the pdf file as: pub.article_id.pdf (e.g. 10060.pdf)
+<LI>2. Use WinSCP to put the file in:
+
+[tesuque.stanford.edu:/opt2/pub_documents/]
+
+and it will automatically be linked on the user interface.
+If you don't have WinSCP, you can download it from <A href = "http://winscp.vse.cz/eng/"> HERE </A>. </UL>
+</UL>
+
+<p>
+<A NAME = "merging"><B> Guidelines for Merging Symbolic Gene Models</B> </A> <p>
+<p>
+
+<OL>
+<LI> Only merge symbolic gene models to each other, do not merge them to the AGI gene model yet.
+<LI> Merge symbolic gene models to each other if there is only a single AGI splice variant associated to the locus.
+
+<LI> If you run across some genes where there is no information aside from a name and a summary that looks like 'member of xxxx family', you might be able to find more info in the TAIR Gene family pages.  Use the TAIR website search to find these. Most often, I've ended up merging these into the other gene model.
+
+<LI> Any tricky cases should be set aside for now. Add this locus to the <a href = "http://tesuque.stanford.edu/genemerging">Wiki page </a>we set up for this purpose. For example: If there are AGI splice variants and there are sequences associated to each of the symbolic gene models, do not merge these to each other.   
+
+<LI> Verify that the genes do actually belong to the same locus.  You can do this by using BLAST to map the associated sequences to the locus.
+
+<LI> If there are no papers associated to a gene model but there are papers referred to in the GenBank record, add these to the reference list of the gene in question.
+
+<LI>Pick the name from a nomenclature paper that describes the
+community's agreement to use a single name for a gene that was
+previously known by other names.
+
+<LI>If no nomenclature paper exists, pick the name that has the most
+widespread use in more recent publications. Frequently, there is a
+community consensus on a name that does not end up being published but
+is apparent in everyone's use of a new name after a certain date.
+
+<LI>If names are used with equal frequency or names are
+lab-specific based on correlation of the gene names with authors on the
+papers, pick the name that was published first. (Still up for debate: 
+what counts as published - genbank record?  meeting abstract? or just
+refereed paper?)
+</OL>
+<p>
+
+<p>
+<B> Adding Symbol-based Gene Aliases vs. Creating New Gene Models</B> </A> <p>
+<p>
+
+<UL>
+<LI> These guidelines are meant to cover cases where a curator finds a new symbol-based gene name in a publication and wonders where to capture this symbol and the associated full name.
+
+
+<LI><u> If the locus has only one gene model and that model is an AGI gene model:</u>  Add the symbol-based name as an alias of the AGI gene model.
+                  .
+<LI> <u>If the locus has one or more AGI gene models in addition to a symbol-based gene model:</u>  Add the new symbol-based name as an alias of the existing symbol-based gene model.
+
+<LI> <u>If the locus has several gene models and all of them are AGI gene models:</u>  Create a new gene model with the symbol as the primary name, link this gene model to the locus.  Add sequence information if available.
+
+<LI> <u>If there is more than one symbol-based gene name for the gene in the publication and the existing AGI gene model has no existing symbols:</u> add all of the symbols to the AGI gene model.
+
+<LI> In all cases, remember to add the reference from which the symbol(s) came for tracking purposes.
+</UL>
+<p>
+
+
+<A NAME="info"><B>Strategies for Finding Information Outside of Pub</B></a><p>
+If looking at the existing pub hits doesn't get you the necessary information, try some other searches:<br>
+<UL>
+<LI>Using Arabidopsis and the gene symbol or full name, search:
+<UL><LI><A HREF="http://www.google.com/">Google</A>
+<LI><A HREF="http://www.ncbi.nlm.nih.gov:80/entrez/query.fcgi?db=Nucleotide">GenBank Nucleotide</A> (also try wildcards and 'at' prefix)
+<LI><A HREF="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed">PubMed</A> (also try wildcards and 'at' prefix)
+</UL>
+<LI>Click on the PubMed link of any articles to look for nucleotide links or full text links (sometimes a new pdf can be found this way)
+<LI>Try TAIR's <A HREF="http://arabidopsis.org/cgi-bin/geneform/geneform.pl">Gene Hunter</A>
+<LI>Search the TAIR web pages (good for finding the gene family info)
+<LI>Use the full text search option in pub
+<LI>If you have a researcher's name associated to a gene:
+<UL><LI>Look at recent publications from that researcher
+<LI>Look at GenBank records submitted by that researcher
+<LI>Contact the researcher by email and ask for information</UL>
+</UL>
+
+<p>
+<A NAME="papers"><B>Paper Curation Guidelines</B></a><p>
+
+**For all papers:
+<OL>
+<LI>When beginning the paper, please fill in the <B> scanned_by </B> field on the article detail page.
+
+<LI>After extracting all the info you can from the paper, please fill in/mark
+the <B> scanned_date </B>(format YYYY-MM-DD) and <B> is_scanned  </B> (click on Y) fields on the article detail page 
+<LI>If no controlled vocabulary annotations can be made, see if there is information to update the summary in the paper.  If yes, go ahead and update the summary. If not, mark the paper as scanned and move on.
+</OL>
+
+**For papers with hits to genes:
+<OL>
+<LI>look at all hits and validate/invalidate as appropriate
+<LI>if this gene has other papers whose information has not been captured,
+curate the rest of the related literature
+</OL>
+
+**For papers without hits to genes (but that should have hits):
+<OL>
+<LI>link to related gene by adding as a hit
+<LI>add new gene if it doesn't exist
+        - add as an alias of existing symbolic gene model if one exists,
+apply rules for picking primary name
+<LI>if completely new gene, add sequences, associate to locus, write
+summary statement, fill in missing annotations, etc., etc.
+<LI>if this gene has other papers whose information has not been captured,
+curate the rest of the related literature
+</OL>
+
+
+<p>
+
+
+
+<BR>
+<BR>
+
+<p>
+
+
+<BR>
+<BR>
+<center><I>Last modified by Tanya Berardini 19 May 2006</I></center>
+</blockquote>
+</body></html>

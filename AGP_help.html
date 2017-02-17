@@ -1,0 +1,151 @@
+
+<html><head><title>Allele, Germplasm and Phenotype Curation Guide</title></head>
+<BR>
+<body bgcolor="#FfFfFF">
+<CENTER><H2> TAIR Allele, Germplasm and Phenotype Curation Guide </H2></CENTER>
+<CENTER>
+<img src="http://genome-www.stanford.edu/images/line.red2.gif" alt="[line]" WIDTH="80%" HEIGHT="4">
+</CENTER>
+
+<TD><CENTER>
+
+<A HREF="#Outline">General Steps</A>|
+<A HREF="#poly_seq">Polymorphic Sequence Style</A>|
+<A HREF="#Style">Phenotype Style Guidelines</A>
+
+
+
+</CENTER></TD><BR><BR>    
+<UL>This document contains general information on how we will curate phenotypes at TAIR.  Relevant decisions reached during curator meetings will be recorded here.
+
+<BR>
+<BR>
+More help on curation:
+<UL>
+<LI><a href = 'http://tesuque.stanford.edu/pubsearch.org/pub_help.html'>Guidelines for updating the Gene Detail Page</a>.
+<LI><a href = 'http://tesuque.stanford.edu/pubsearch.org/GO_help.html'>Guidelines for making GO and anat/deve annotations</a>.
+</UL>
+
+<BR>
+<BR>
+
+
+<p>
+
+<CENTER><A NAME="Outline"><B>General Steps</B></a><BR></CENTER>
+<BR>
+<UL>
+<LI>When curating germplasms descended from SALK lines that are described as HOMOZYGOUS in the paper and there are no existing homozygous SALK germplasm entries 
+already in the database, create a new one and assign the phenotype to that one.  The original SALK lines are heterozygous and should not be annotated with homozygous line-
+based phenotypes.  There are homozygous SALK lines that have been submitted to the ABRC and they are marked as such.  If one exists for your line of interest, there is 
+no need to add another one.
+
+<LI>When curating SALK lines that have been given a 'real' name in a paper, use the 'real' name as the primary name of the allele and move the SALK name (the one with
+all the numbers 11.334.35.x) to the alias field, under type = 'original name'.
+
+
+<LI> If the allele already exists associated to the gene, this most likely means that there already is an associated germplasm.  
+     <UL>
+     <LI> Click on the allele link and fill in the missing information.  Higher priority information to capture falls into the following categories:
+           <OL>
+           <LI>  allele type
+           <LI>  mutagen
+           <LI>  mutation site:  This information goes into two fields:  <B>mutation site</B> (either genic or intergenic) and <B>mutation site</B> in the linking information to Related Genes (exon/intron/etc.), please fill both in if possible. 
+           <LI> inheritance (inheritance of the phenotype that's apparently caused by this allele)
+           <LI> polymorphic sequence (at the nucleotide level, i.e. G->A, amino acid changes should be documented in the description field)
+           <LI> mode (see next item)
+           </OL>
+<LI> More on allele modes:
+     <UL>
+     <LI><U>hypermorphic</U>: A type of mutation in which the altered gene product possesses an increased level of activity, or in which the wild-type gene product is expressed at a increased level.  For example, a mutation of a protein kinase that makes it more active as a kinase (higher kcat) or causes its expression to increase (by Northern or Western analysis, for instance) with respect to wild type levels.<br><B> Concrete example:  <a href =http://tesuque.stanford.edu:8080/pub/pdfs/32516.pdf>eid4</a></B><br><br>
+
+     <LI><U>hypomorphic</U>: A type of mutation in which the altered gene product possesses a reduced level of activity, or in which the wild-type gene product is expressed at a reduced level.  For example,a mutation of a protein kinase that makes it less active as a kinase (lower kcat) or causes its expression to decline (by Northern or Western analysis, for instance) with respect to wild type levels. <br><B>Concrete example:  <a href =http://tesuque.stanford.edu:8080/pub/pdfs/32525.pdf>dis3-3</a></B><br><br>
+
+     <LI><U>antimorphic</U>: A type of mutation in which the altered gene product possesses an altered molecular function that acts antagonistically to the wild-type allele (are always dominant or semidominant). For example, a mutation where the protein sequence is altered such that protein function is abolished but the protein can still interact with other factors.<br> <B>Concrete example: <a href = http://tesuque.stanford.edu:8080/pub/pdfs/32518.pdf>ult1-1</a></B> <br><br>
+
+     <LI><U>gain-of-function</U>: A type of mutation in which the altered gene product possesses a novel molecular function or a novel pattern of gene expression. Usually dominant or semidominant. Synonym: neomorphic For example, a mutation that causes an expanded domain of gene expression.  <br><B> Concrete example: <a href = http://tesuque.stanford.edu:8080/pub/pdfs/29282.pdf>several rev alleles</B></a><br><br>
+
+     <LI><U>loss-of-function</U>: A type of mutation in which the altered gene product lacks the molecular function of the wild-type gene Synonyms: Amorphic Mutation,Null Mutation, knock-out mutation.  For example, a mutation where a key domain in the protein is altered such that it no longer possesses the domain's activity or where transcription of the protein is abolished. <br> <B>Concrete example: <a href = http://tesuque.stanford.edu:8080/pub/pdfs/32518.pdf>ult1-2 and ult1-3</a></B> <br><br>
+     </UL>
+<LI> The field <U>allele description</U> is meant for information about the molecular nature of the lesion.  For example, the exact location of the T-DNA insertion or substitution, the amino acid change that results from the substitution.  This field  is <b>not</b> meant for any type of phenotype information.
+<LI> See if there is a phenotype associated with the germplasm.  If not, add one and add the reference from which you pulled this information.	 
+</UL> <BR>
+
+<LI> If the allele does NOT yet exist:
+     <UL>
+<LI> Add the allele to the gene.  Fill in all the relevant fields that you can get from the paper.  In the 'mutation site' field, indicate whether the mutation is in a genic region (most likely) or not.
+<LI> If the allele in the paper is of the form abc(superscript)text, enter this into the database as abc_text.  We have agreed to use an underscore to represent the fact that the text that follows is superscripted.
+<LI> Flanking sequences to be added are the sequences immediately flanking the site of mutation. Please enter at least 20 bp for each field. (This makes it easier for us to map the polymorphism.) Do not use this field to capture T-DNA/Tn flanking sequences.  These types of sequences are associated computationally.   The first sequence should be the 5' one and the second sequence should be the 3' one.  Only enter this information if it is in the paper.  Do not spend the extra time it would take to track down the flanks using SeqViewer. If you need to add PCR primers, please let me know and DO NOT ADD them.  These probably will need to get loaded linked to genetic markers.
+<LI> Add linking information (location of mutation within the gene).
+<LI> Add a germplasm to an allele.  Fill in all the relevant fields you can get from the paper.
+<LI> Add allele-germplasm linking information (genotype and segregation ratio information,if available).
+<LI> Add a phenotype to the germplasm. (see below for style guidelines)
+<LI> Add phenotype - germplasm linking information (reference that describes phenotype).
+    </UL>
+
+</UL>
+<BR>
+<p>
+
+<CENTER><A NAME="poly_seq"><B>Polymorphic Sequence Style</B></a><BR></CENTER>
+<BR>
+<UL>
+<LI> For substitutions, use the convention:  C->T (one nucleotide changing to another).  Fill in the flanking sequences.
+<LI> For deletions, use the convention:  CAAGTC deleted.  Fill in the flanking sequences.
+<LI> For insertions, type out the nucleotides inserted. Fill in the flanking sequences.
+<LI> Amino acid changes and their nature (missense, silent, nonsense) go into the description field as well as the position information (xxx from start of transcription/translation),if you want to spell this out.
+</UL>
+
+<BR>
+<CENTER><A NAME="Style"><B>Style Guidelines for writing Phenotype Description</B></CENTER>
+<BR><BR>
+
+There are two fields, both of which are (text) in the database.
+<UL>   
+<LI> <U>Phenotype</U> : Format is free text. Use sentence/paragraph format for constructing these. Capture additional information that is not covered by EAV in the free text.  This includes data such as assay conditions, growth conditions/environmental variables and experimental method.<br>
+ If the paper states that there is no visible phenotype, please link this to the 'No visible phenotype.' entry (phenotype_id = 10332) and add the paper as the reference.
+
+
+<LI> <U>CV_phenotype</U> : Format is controlled, see below.  This will capture a subset of the information you describe in the Phenotype field.
+		    
+<UL>
+<LI> Use the EAV model:
+     <UL>
+     <LI> E = entity = the thing you're looking at
+         <UL> 
+         <LI> comes from a controlled vocabulary: anatomy, developmental stage, GO function, GO process, GO component
+         <LI> can be combinatorial from two independent vocabularies: for example: if the term 'anther development' does not exist in GO, you can use anther (anatomy term) + development (GO process term)
+         </UL>		 			  
+     <LI> A = aspect = what in particular are you looking at? (can be measured, either quantitatively or qualitatively)
+         <UL>
+         <LI> from PATO (Phenotype, ATtribute ontology) ontology : length, width, height, growth rate
+         <LI> we will load the PATO terms eventually, in the meantime, just describe what is measured 
+         </UL>
+     <LI> V = value  = what is the value of the measurement?  
+         <UL>
+         <LI> enter absolute or relative value
+         <LI> enter units as well
+         </UL>					      
+
+     </UL>					 
+<LI> Enter EAV information in this form: entity:value:attribute. I know this is EVA but it's easier to read in this arrangement. <BR>  For example:
+     <UL>
+     <LI> seed:shorter:length
+     <LI> leaf:yellow:color
+     <LI> whole plant:faster:growth rate
+     <LI> leaf morphogenesis:abnormal:process
+     </UL>
+<LI> Enter each EVA combination as a separate line item, separated by line breaks. 
+<LI> This information will NOT be sent to TAIR yet. 
+</UL>
+
+
+<BR>
+<BR>
+
+
+
+<center><I>Last modified by Tanya Berardini 22 June 2007<BR>
+Questions? Comments? Suggestions? <A href="mailto:tberardi@acoma.stanford.edu">Email Tanya. </A> </I></center>
+</blockquote>
+</body></html>

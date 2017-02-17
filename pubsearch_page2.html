@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<title>Data and Dataflow</title>
+<style><!--
+.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF" link=blue vlink=purple class="Normal" lang=EN-US>
+<div class=Section1> 
+  <H2>PubSearch Data and Dataflow</h2>
+  <p><b><span style='font-family:Verdana'>Publications</span></b><span
+style='font-family:Verdana'><br>
+  <p>TAIR’s PubSearch installation presently contains 15,486 research articles, 
+    book chapters, and reviews (7,782 full-text), and 1,204 abstracts from conference 
+    proceedings. Most article information is obtained from (<a
+href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed" target="_blank">PubMed</a>, monthly 
+    download) and the National Agronomics Library (NAL, quarterly download) that 
+    compiles both <a href="http://www.nal.usda.gov/ag98/" target="_blank">Agricola</a> and <a
+href="http://www.biosis.org/" target="_blank">BIOSIS</a>. The criteria for retrieving articles 
+    is the occurrence of the word 'Arabidopsis’ in the title, abstract or keywords; 
+    this query can easily be adapted for use with any other organism or purpose 
+    of a database. The conference abstracts are usually obtained from the conference 
+    organizers directly. Where possible, full text articles are downloaded in 
+    portable document format (PDF) or scanned using optical character recognition 
+    software <a href="http://www.scansoft.com/omnipage/" target="_blank">Omnipage 11</a> and converted 
+    to PDF. About 20% of the articles in PDF were converted into plain text using 
+    the pdftotext utility available on Unix platforms. These plain text representations 
+    of articles are used in the full text search. </p>
+  <b>Loci and genes </b>
+  <p>The main source of gene information was obtained from the <a href="http://www.arabidopsis.org" target="_blank">TAIR database</a>
+    Updates come mainly from <a href="http://www.ncbi.nlm.nih.gov" target="_blank"> Genbank</a>, 
+    <a href="http://www.tigr.org" target="_blank">TIGR</a> and the user community. New genes are 
+    also identified by PubSearch by scanning the literature using regular expressions 
+    specific for <a href="http://www.arabidopsis.org/info/guidelines.html" target="_blank">gene 
+    symbols</a>. Presently, there are 31,218 loci and 37,240 genes in the PubSearch 
+    database. </p>
+  <b>Keywords</b>
+  <p>Keywords comprise approximately 
+    14,238 <a href="http://www.geneontology.org" target="_blank">Gene Ontology</a> terms, and 400 
+    terms from the <a href="http://www.arabidopssi.org/info/ontologies/" target="_blank"><a>TAIR ontologies</a> (developmental stages and anatomy 
+    of Arabidopsis The GO terms are being updated in a local installation of the 
+    GO database on a daily basis from the Gene Ontology CVS repository. The PubSearch 
+    term table is then updated from the local GO database. </p>
+</span>
+</div>
+</body>
+</html>

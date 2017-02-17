@@ -1,0 +1,38 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link rel=Edit-Time-Data href="./PubFetch_files/editdata.mso">
+<title>PubFetch</title>
+<style><!--
+.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF" link=blue vlink=purple class="Normal" lang=EN-US>
+<div class=Section1> 
+<TABLE width=550><TR><TD>
+  <h2>PubSearch</h2>
+  <p><b><span style='font-family:Verdana'>Description</span></b><span
+style='font-family:Verdana'><br>
+PubSearch is a literature curation management system designed to store and manage the available literature for an organism or system of interest. It provides database curators with a powerful literature search capability, stores relevant biological information, creates automatic associations between the biological information and the literature, and provides a user-friendly web interface for manual validation and curation. PubSearch is based on a simple MySQL relational database for the back-end, and Java Servlet and Java Server Pages for the API and front-end applications. PubSearch is extensible, allowing new biological objects of interest to be added, and flexible, allowing programming of different curation strategies. It is currently used for curating biological information for the model organism database for Arabidopsis thaliana, TAIR. The system can be easily adapted for extracting and curating information from the literature for any model organism database. PubSearch is one of the Generic Model Organism Database (<a href=http://www.gmod.org>GMOD</a>) toolkits and is freely available from the <a href=http://www.gmod.org>GMOD site</a>.
+<P>
+Figure 1. PubSearch dataflow and design overview<br>
+<img src="newimages/pubSearch_figure.jpg">
+The PubSearch database is the central component of the PubSearch system. The following operations are performed during PubSearch use: Step 1: The PubSearch database is loaded in batch mode using input from other databases such as literature databases (PubMed, Agricola, etc), TAIR (an example model organism database), and the Gene Ontology database. Step 2: The PubSearch database indexes the information by populating the Hit table. Step 3: Through the Java API and the web-interface, curators search, update, validate and insert information, relying on the indexed data in the database. Step 4: Finally, the data is exported to the TAIR production database and other databases such as the Gene Ontology database.
+<P>
+<B>Links:</b>
+<BR>
+<a href=http://tesuque.stanford.edu/pubsearch.org/pub_help.html>TAIR's Literature curation guidelines</a>
+<BR>
+<a href=http://sourceforge.net/tracker/?func=add&group_id=27707&atid=511475>PubSearch Sourceforge bug submit page</a>
+<BR><BR><BR>
+<B>Demo:</B> 
+<BR>
+A PubSearch demo containing TAIR data is available at : <a href="http://tesuque.stanford.edu:9999/pubdemo" target="_blank">PubSearch Demo</a> (username: demo password: demo).
+<BR><BR><BR>
+For questions or comments please contact: <a href=mailto:curator@arabidopsis.org>curator@arabidopsis.org</a>
+</TD></TR></TABLE>
+</div>
+</body>
+</html>
